@@ -31,7 +31,40 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  return HtmlService.createHtmlOutput("LARA Upload API - Prêt");
+  try {
+    const sheet = SpreadsheetApp.openById(CONFIG.SHEET_ID).getSheetByName(CONFIG.SHEET_NAME);
+    const data = sheet.getDataRange().getValues();
+    
+    const documents = [];
+    
+    // Sauter l'en-tête (ligne 0)
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const cat = row[0];
+      const fileName = row[1];
+      const date = row[2];
+      const desc = row[3];
+      const fileUrl = row[4];
+      const fileId = row[5];
+      
+      if (fileName && fileUrl) {
+        documents.push({
+          cat: cat,
+          name: fileName,
+          date: date instanceof Date ? formatDate(date) : date,
+          desc: desc,
+          url: fileUrl,
+          id: fileId
+        });
+      }
+    }
+    
+    return sendResponse(true, "Liste récupérée", { data: documents });
+    
+  } catch (error) {
+    Logger.log("Erreur doGet: " + error);
+    return sendResponse(false, "Erreur: " + error.toString());
+  }
 }
 
 // ============================================
