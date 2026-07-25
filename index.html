@@ -1044,6 +1044,10 @@ function addDocument() {
 
         documents[category].push(newDoc);
         render();
+        
+        // Sauvegarder dans localStorage
+        localStorage.setItem('lara_documents', JSON.stringify(documents));
+        
         closeAddModal();
 
         // Recharger depuis le Sheets pour synchroniser
@@ -1238,6 +1242,9 @@ function confirmDelete() {
   // Rafraîchir l'affichage
   render();
   
+  // Sauvegarder dans localStorage
+  localStorage.setItem('lara_documents', JSON.stringify(documents));
+  
   // Fermer le modal
   closeConfirmModal();
 }
@@ -1302,8 +1309,13 @@ document.getElementById('modalMessage')?.addEventListener('click', function(e) {
 // CHARGER LES DOCUMENTS DEPUIS LE SHEETS (GET)
 // ============================================
 
+// ============================================
+// CHARGER LES DOCUMENTS (localStorage + Sheets)
+// ============================================
+
 async function loadDocuments() {
   try {
+    // Essayer de charger depuis le Sheets
     const r = await fetch(WEB_APP_URL, {method: 'GET'});
     const j = await r.json();
     
@@ -1331,11 +1343,22 @@ async function loadDocuments() {
           preview: doc.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'placeholder'
         });
       });
+      
+      // Sauvegarder dans localStorage
+      localStorage.setItem('lara_documents', JSON.stringify(documents));
+      render();
     }
-    
-    render();
   } catch (error) {
-    console.log('LARA démarrée');
+    // Si erreur, charger depuis localStorage
+    console.log('Chargement depuis localStorage...');
+    const saved = localStorage.getItem('lara_documents');
+    if (saved) {
+      try {
+        documents = JSON.parse(saved);
+      } catch (e) {
+        documents = { photo: [], plan: [], pv: [] };
+      }
+    }
     render();
   }
 }
