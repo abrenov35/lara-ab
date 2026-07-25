@@ -632,7 +632,7 @@
     </div>
 
     <div class="modal-add-header">
-      <button class="btn-mode active" onclick="switchMode('upload')">📁 Uploader un fichier</button>
+      <button class="btn-mode active" onclick="triggerFileInput()">📁 Uploader un fichier</button>
       <button class="btn-mode" onclick="switchMode('capture')">📸 Coller une capture</button>
     </div>
 
@@ -650,17 +650,7 @@
         </div>
       </div>
 
-      <div class="form-row full">
-        <div class="form-group">
-          <label>Fichier</label>
-          <div class="file-input-wrapper">
-            <input type="file" id="addFile" accept="image/*,.pdf,.doc,.docx">
-            <label class="file-input-label" for="addFile" id="fileLabel">
-              📎 Sélectionner un fichier ou le glisser ici
-            </label>
-          </div>
-        </div>
-      </div>
+      <input type="file" id="addFile" accept="image/*,.pdf,.doc,.docx" style="display: none;">
 
       <div class="form-row">
         <div class="form-group">
@@ -782,6 +772,11 @@ function resetForm() {
   document.getElementById('fileLabel').classList.remove('has-file');
 }
 
+function triggerFileInput() {
+  switchMode('upload');
+  document.getElementById('addFile').click();
+}
+
 function switchMode(mode) {
   const upload = document.getElementById('uploadMode');
   const capture = document.getElementById('captureMode');
@@ -800,15 +795,10 @@ function switchMode(mode) {
   }
 }
 
-// File input
+// File input - trigger add form
 document.getElementById('addFile')?.addEventListener('change', function(e) {
-  const label = document.getElementById('fileLabel');
   if (this.files.length > 0) {
-    label.textContent = `✓ ${this.files[0].name}`;
-    label.classList.add('has-file');
-  } else {
-    label.textContent = '📎 Sélectionner un fichier ou le glisser ici';
-    label.classList.remove('has-file');
+    // File sélectionné, l'utilisateur continuera à remplir le formulaire
   }
 });
 
