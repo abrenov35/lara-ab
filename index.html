@@ -3,171 +3,193 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LARA - Gestion Documentaire de Chantier</title>
+  <title>LARA - Gestion Documentaire</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
-      background: #f9fafb;
-      padding: 20px;
+    :root {
+      --navy: #0d3a66;
+      --blue: #185fa5;
+      --green: #2e7d46;
+      --red: #b3352c;
+      --orange: #ff9800;
+      --amber: #c9a227;
+      --gray: #999;
     }
-    
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f9fafb;
+      color: #1c2b48;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+
     .container {
       max-width: 1000px;
       margin: 0 auto;
+      padding: 16px;
     }
-    
-    /* HEADER */
+
     header {
-      background: linear-gradient(135deg, #0d3a66 0%, #185fa5 100%);
+      background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
       color: white;
-      padding: 40px 20px;
-      text-align: center;
-      border-radius: 12px;
-      margin-bottom: 40px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 24px 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(22, 45, 73, 0.1);
     }
-    
+
     header h1 {
-      font-size: 2.5em;
-      margin-bottom: 8px;
+      font-size: 24px;
       font-weight: 700;
+      margin-bottom: 4px;
     }
-    
+
     header p {
-      font-size: 1.1em;
-      opacity: 0.95;
+      font-size: 14px;
+      opacity: 0.9;
     }
-    
-    /* SECTION */
+
+    .seclabel {
+      margin: 16px -14px 8px -14px;
+      padding: 8px 14px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+      color: white;
+      background: var(--navy);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 6px 6px 0 0;
+    }
+
     .section {
       background: white;
-      border-radius: 12px;
-      padding: 30px;
-      margin-bottom: 30px;
-      border: 1px solid #e0e0e0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border: 1px solid rgba(22, 45, 73, 0.08);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(22, 45, 73, 0.08);
     }
-    
-    .section h2 {
-      color: #185fa5;
-      margin-bottom: 24px;
-      font-size: 24px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+
+    .info-box {
+      background: rgba(24, 95, 165, 0.08);
+      border: 1px solid rgba(24, 95, 165, 0.25);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: 12.5px;
+      line-height: 1.5;
     }
-    
-    /* CATÉGORIES */
-    .categories {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
+
+    .info-box strong {
+      color: var(--blue);
     }
-    
-    .category-card {
-      background: white;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      overflow: hidden;
-      transition: all 0.3s ease;
-    }
-    
-    .category-card:hover {
-      border-color: #185fa5;
-      box-shadow: 0 8px 24px rgba(24, 95, 165, 0.15);
-      transform: translateY(-4px);
-    }
-    
-    .category-header {
-      padding: 20px;
-      font-weight: 600;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 16px;
-    }
-    
-    .category-header.photo { background: #ffd9b3; color: #8d4a0a; }
-    .category-header.plan { background: #e0c3fc; color: #553399; }
-    .category-header.pv { background: #c6f6d5; color: #22543d; }
-    
-    .category-count {
-      background: rgba(255,255,255,0.3);
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 13px;
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
       font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      text-align: center;
     }
-    
-    .category-body {
-      padding: 20px;
-      min-height: 200px;
+
+    .b-photo {
+      background: #ffd9b3;
+      color: #8d4a0a;
     }
-    
-    .document-list {
-      list-style: none;
+
+    .b-plan {
+      background: #e0c3fc;
+      color: #553399;
     }
-    
-    .document-item {
-      padding: 12px;
-      border-bottom: 1px solid #f0f0f0;
+
+    .b-pv {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+
+    .badge-count {
+      background: rgba(255, 255, 255, 0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .document-card {
+      background: white;
+      border: 1px solid rgba(22, 45, 73, 0.08);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
+      transition: all 0.2s ease;
     }
-    
-    .document-item:last-child {
-      border-bottom: none;
+
+    .document-card:hover {
+      border-color: var(--blue);
+      box-shadow: 0 2px 6px rgba(24, 95, 165, 0.1);
     }
-    
-    .document-name {
+
+    .document-info {
       flex: 1;
+    }
+
+    .document-name {
       font-weight: 600;
-      color: #333;
-      font-size: 14px;
-      word-break: break-word;
+      color: var(--navy);
+      font-size: 13.5px;
+      margin-bottom: 3px;
     }
-    
+
     .document-date {
-      font-size: 12px;
-      color: #999;
-      white-space: nowrap;
+      font-size: 11px;
+      color: var(--gray);
     }
-    
+
     .btn-voir {
-      background: #0d3a66;
+      background: var(--navy);
       color: white;
       border: none;
-      padding: 8px 16px;
       border-radius: 6px;
-      font-size: 13px;
+      padding: 6px 12px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
       white-space: nowrap;
+      transition: all 0.2s ease;
     }
-    
+
     .btn-voir:hover {
-      background: #185fa5;
-      transform: scale(1.05);
+      background: var(--blue);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(24, 95, 165, 0.2);
     }
-    
+
     .empty-state {
       text-align: center;
-      color: #999;
       padding: 20px;
-      font-size: 14px;
+      color: var(--gray);
+      font-size: 13px;
     }
-    
+
     .empty-state-icon {
-      font-size: 40px;
-      margin-bottom: 12px;
+      font-size: 32px;
+      margin-bottom: 8px;
     }
-    
+
     /* MODAL */
     .modal {
       display: none;
@@ -176,124 +198,150 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.5);
       z-index: 1000;
       align-items: center;
       justify-content: center;
     }
-    
+
     .modal.active {
       display: flex;
     }
-    
+
     .modal-content {
       background: white;
-      border-radius: 12px;
-      padding: 30px;
+      border-radius: 10px;
+      padding: 24px;
       max-width: 600px;
       width: 90%;
       max-height: 80vh;
       overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     }
-    
+
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(22, 45, 73, 0.08);
+      padding-bottom: 12px;
     }
-    
+
     .modal-header h3 {
-      color: #185fa5;
-      font-size: 20px;
+      color: var(--navy);
+      font-size: 16px;
+      flex: 1;
+      word-break: break-word;
     }
-    
+
     .modal-close {
       background: none;
       border: none;
-      font-size: 24px;
+      font-size: 20px;
       cursor: pointer;
-      color: #999;
+      color: var(--gray);
       padding: 0;
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
-    
+
     .modal-close:hover {
-      color: #333;
+      color: var(--navy);
     }
-    
+
     .modal-body {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
-    
+
     .modal-info {
-      background: #f9fafb;
-      padding: 16px;
+      background: #faf9f6;
+      padding: 12px 14px;
       border-radius: 8px;
-      font-size: 14px;
-      color: #666;
+      font-size: 12.5px;
+      color: #555;
       line-height: 1.6;
     }
-    
+
+    .modal-info p {
+      margin-bottom: 6px;
+    }
+
+    .modal-info strong {
+      color: var(--navy);
+    }
+
     .modal-link {
       display: inline-block;
-      margin-top: 16px;
-      background: #185fa5;
+      margin-top: 12px;
+      background: var(--blue);
       color: white;
-      padding: 12px 24px;
+      padding: 8px 16px;
       border-radius: 6px;
       text-decoration: none;
       font-weight: 600;
-      transition: all 0.3s ease;
+      font-size: 12.5px;
+      transition: all 0.2s ease;
     }
-    
+
     .modal-link:hover {
-      background: #0d3a66;
-      transform: translateY(-2px);
+      background: var(--navy);
+      transform: translateY(-1px);
     }
-    
-    /* INFO BOX */
-    .info-box {
-      background: #e6f0ff;
-      border-left: 4px solid #185fa5;
-      padding: 16px;
-      border-radius: 4px;
-      margin: 20px 0;
-      font-size: 14px;
-      line-height: 1.6;
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
     }
-    
-    .info-box strong {
-      color: #185fa5;
+
+    .stat {
+      background: #faf9f6;
+      border: 1px solid rgba(22, 45, 73, 0.08);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
     }
-    
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-      header h1 { font-size: 2em; }
-      .section { padding: 20px; }
-      .categories { grid-template-columns: 1fr; }
+
+    .stat small {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.6;
+      margin-bottom: 4px;
     }
-    
-    /* ANIMATION SPINNER */
-    .spinner {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #185fa5;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-right: 8px;
+
+    .stat b {
+      display: block;
+      font-size: 18px;
+      color: var(--blue);
+      font-weight: 700;
     }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+
+    @media (max-width: 640px) {
+      .document-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .btn-voir {
+        width: 100%;
+        text-align: center;
+      }
+
+      header {
+        padding: 16px;
+      }
+
+      header h1 {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
@@ -307,99 +355,68 @@
     <p>Gestion Documentaire de Chantier</p>
   </header>
 
-  <!-- INFO -->
+  <!-- INFO BOX -->
   <div class="section">
     <div class="info-box">
-      <strong>💡 Comment ça marche ?</strong><br>
-      LARA affiche tous vos documents de chantier (Photos, Plans, PV) dans une liste simple. 
-      Cliquez "👁️ VOIR" pour ouvrir un document. Les fichiers sont stockés de manière sécurisée chez Google Drive.
+      <strong>💡 Comment ça marche :</strong> LARA affiche vos documents (Photos, Plans, PV) dans une liste simple. 
+      Cliquez "👁️ VOIR" pour ouvrir un document stocké chez Google Drive. C'est tout !
+    </div>
+
+    <div class="kpis">
+      <div class="stat">
+        <small>Photos</small>
+        <b id="photoCount">0</b>
+      </div>
+      <div class="stat">
+        <small>Plans</small>
+        <b id="planCount">0</b>
+      </div>
+      <div class="stat">
+        <small>PV</small>
+        <b id="pvCount">0</b>
+      </div>
     </div>
   </div>
 
-  <!-- CATÉGORIES -->
+  <!-- PHOTOS -->
   <div class="section">
-    <h2>📋 Mes Documents</h2>
-    
-    <div class="categories">
-      
-      <!-- PHOTOS -->
-      <div class="category-card">
-        <div class="category-header photo">
-          <span>📸 Photos</span>
-          <span class="category-count" id="photoCount">0</span>
-        </div>
-        <div class="category-body">
-          <ul class="document-list" id="photoList">
-            <li class="empty-state">
-              <div class="empty-state-icon">📸</div>
-              <p>Aucune photo pour le moment</p>
-            </li>
-          </ul>
-        </div>
+    <div class="seclabel">
+      <span>📸 Photos du Chantier</span>
+      <span class="badge-count" id="photoCountBadge">0</span>
+    </div>
+    <div id="photoContainer" style="padding: 0 14px;">
+      <div class="empty-state">
+        <div class="empty-state-icon">📸</div>
+        <p>Aucune photo pour le moment</p>
       </div>
-
-      <!-- PLANS -->
-      <div class="category-card">
-        <div class="category-header plan">
-          <span>📐 Plans</span>
-          <span class="category-count" id="planCount">0</span>
-        </div>
-        <div class="category-body">
-          <ul class="document-list" id="planList">
-            <li class="empty-state">
-              <div class="empty-state-icon">📐</div>
-              <p>Aucun plan pour le moment</p>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- PV RÉCEPTION -->
-      <div class="category-card">
-        <div class="category-header pv">
-          <span>✅ PV de Réception</span>
-          <span class="category-count" id="pvCount">0</span>
-        </div>
-        <div class="category-body">
-          <ul class="document-list" id="pvList">
-            <li class="empty-state">
-              <div class="empty-state-icon">✅</div>
-              <p>Aucun PV pour le moment</p>
-            </li>
-          </ul>
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <!-- EXPLICATION -->
+  <!-- PLANS -->
   <div class="section">
-    <h2>🔍 Détails</h2>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-      
-      <div style="background: #e6f0ff; border-left: 4px solid #185fa5; padding: 16px; border-radius: 6px;">
-        <strong style="color: #185fa5;">📋 Liste Simple</strong>
-        <p style="font-size: 14px; color: #666; margin-top: 8px;">
-          Tous vos documents affichés d'un coup, bien organisés par catégorie.
-        </p>
+    <div class="seclabel">
+      <span>📐 Plans Techniques</span>
+      <span class="badge-count" id="planCountBadge">0</span>
+    </div>
+    <div id="planContainer" style="padding: 0 14px;">
+      <div class="empty-state">
+        <div class="empty-state-icon">📐</div>
+        <p>Aucun plan pour le moment</p>
       </div>
+    </div>
+  </div>
 
-      <div style="background: #e6f0ff; border-left: 4px solid #185fa5; padding: 16px; border-radius: 6px;">
-        <strong style="color: #185fa5;">👁️ Pop-up Rapide</strong>
-        <p style="font-size: 14px; color: #666; margin-top: 8px;">
-          1 clic sur "VOIR" et le document s'ouvre. Pas de complications.
-        </p>
+  <!-- PV RÉCEPTION -->
+  <div class="section">
+    <div class="seclabel">
+      <span>✅ PV de Réception</span>
+      <span class="badge-count" id="pvCountBadge">0</span>
+    </div>
+    <div id="pvContainer" style="padding: 0 14px;">
+      <div class="empty-state">
+        <div class="empty-state-icon">✅</div>
+        <p>Aucun PV pour le moment</p>
       </div>
-
-      <div style="background: #e6f0ff; border-left: 4px solid #185fa5; padding: 16px; border-radius: 6px;">
-        <strong style="color: #185fa5;">☁️ Stockage Google</strong>
-        <p style="font-size: 14px; color: #666; margin-top: 8px;">
-          Les fichiers restent chez Google Drive, sécurisés et sauvegardés.
-        </p>
-      </div>
-
     </div>
   </div>
 
@@ -437,57 +454,54 @@ const documents = {
 };
 
 // ============================================
-// FONCTION: AFFICHER TOUS LES DOCUMENTS
+// AFFICHAGE
 // ============================================
 
-function renderAll() {
+function render() {
   renderCategory('photo');
   renderCategory('plan');
   renderCategory('pv');
   updateCounts();
 }
 
-// ============================================
-// FONCTION: AFFICHER UNE CATÉGORIE
-// ============================================
-
 function renderCategory(category) {
-  const list = document.getElementById(category + 'List');
+  const containerId = category + 'Container';
+  const container = document.getElementById(containerId);
   const docs = documents[category];
   
   if (docs.length === 0) {
-    list.innerHTML = '<li class="empty-state"><div class="empty-state-icon">📁</div><p>Aucun document pour le moment</p></li>';
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📁</div>
+        <p>Aucun document pour le moment</p>
+      </div>
+    `;
     return;
   }
   
-  list.innerHTML = docs.map(doc => `
-    <li class="document-item">
-      <div>
+  container.innerHTML = docs.map(doc => `
+    <div class="document-card">
+      <div class="document-info">
         <div class="document-name">${doc.nom}</div>
         <div class="document-date">${doc.date}</div>
       </div>
       <button class="btn-voir" onclick="viewDocument('${category}', '${doc.id}')">👁️ VOIR</button>
-    </li>
+    </div>
   `).join('');
 }
-
-// ============================================
-// FONCTION: METTRE À JOUR LES COMPTEURS
-// ============================================
 
 function updateCounts() {
   document.getElementById('photoCount').textContent = documents.photo.length;
   document.getElementById('planCount').textContent = documents.plan.length;
   document.getElementById('pvCount').textContent = documents.pv.length;
+  
+  document.getElementById('photoCountBadge').textContent = documents.photo.length;
+  document.getElementById('planCountBadge').textContent = documents.plan.length;
+  document.getElementById('pvCountBadge').textContent = documents.pv.length;
 }
-
-// ============================================
-// FONCTION: OUVRIR UN DOCUMENT (MODAL)
-// ============================================
 
 function viewDocument(category, docId) {
   const doc = documents[category].find(d => d.id === docId);
-  
   if (!doc) return;
   
   const modal = document.getElementById('modal');
@@ -498,21 +512,16 @@ function viewDocument(category, docId) {
   
   info.innerHTML = `
     <p><strong>Fichier :</strong> ${doc.nom}</p>
-    <p><strong>Type :</strong> ${getCategoryName(category)}</p>
+    <p><strong>Catégorie :</strong> ${getCategoryName(category)}</p>
     <p><strong>Date :</strong> ${doc.date}</p>
-    <p style="margin-top: 16px; color: #666; font-size: 13px;">
-      Ce document est stocké chez Google Drive. 
-      Cliquez le bouton ci-dessous pour l'ouvrir ou le télécharger.
+    <p style="margin-top: 8px; color: #777; font-size: 12px;">
+      Ce document est stocké chez Google Drive. Cliquez le lien pour l'ouvrir, le télécharger ou le partager.
     </p>
-    <a href="${doc.url}" class="modal-link" target="_blank">📂 Ouvrir dans Google Drive</a>
+    <a href="${doc.url}" class="modal-link" target="_blank">📂 Ouvrir dans Google Drive →</a>
   `;
   
   modal.classList.add('active');
 }
-
-// ============================================
-// FONCTION: FERMER LA MODAL
-// ============================================
 
 function closeModal() {
   document.getElementById('modal').classList.remove('active');
@@ -523,10 +532,6 @@ document.getElementById('modal').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
 
-// ============================================
-// HELPER: Nom de la catégorie
-// ============================================
-
 function getCategoryName(category) {
   const names = { photo: 'Photo', plan: 'Plan', pv: 'PV de Réception' };
   return names[category] || 'Document';
@@ -536,7 +541,7 @@ function getCategoryName(category) {
 // INITIALISATION
 // ============================================
 
-renderAll();
+render();
 </script>
 
 </body>
