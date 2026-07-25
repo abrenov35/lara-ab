@@ -140,16 +140,31 @@
       flex: 1;
     }
 
+    .document-header {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
     .document-name {
       font-weight: 600;
       color: var(--navy);
       font-size: 13.5px;
-      margin-bottom: 3px;
+      flex: 1;
     }
 
     .document-date {
       font-size: 11px;
       color: var(--gray);
+      white-space: nowrap;
+    }
+
+    .document-desc {
+      font-size: 11px;
+      color: var(--gray);
+      opacity: 0.8;
+      margin-top: 2px;
     }
 
     .btn-voir {
@@ -875,8 +890,11 @@ function renderCategory(category) {
   container.innerHTML = docs.map(doc => `
     <div class="document-card">
       <div class="document-info">
-        <div class="document-name">${doc.nom}</div>
-        <div class="document-date">${doc.date}</div>
+        <div class="document-header">
+          <div class="document-name">${doc.nom}</div>
+          <div class="document-date">${doc.date}</div>
+        </div>
+        ${doc.desc ? `<div class="document-desc">${doc.desc}</div>` : ''}
       </div>
       <div class="document-actions">
         <button class="btn-voir" onclick="viewDocument('${category}', '${doc.id}')">👁️ VOIR</button>
