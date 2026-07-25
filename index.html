@@ -1287,10 +1287,66 @@ document.getElementById('modalMessage')?.addEventListener('click', function(e) {
 });
 
 // ============================================
+// CHARGER LES DOCUMENTS DEPUIS LE SHEETS
+// ============================================
+
+async function loadDocuments() {
+  try {
+    const params = new URLSearchParams({
+      action: 'list'
+    });
+
+    const response = await fetch(WEB_APP_URL, {
+      method: 'POST',
+      body: params
+    });
+
+    const data = await response.json();
+
+    if (data.success && data.documents) {
+      // Réinitialiser les documents
+      documents = {
+        photo: [],
+        plan: [],
+        pv: []
+      };
+
+      // Catégories mappées
+      const categoryMap = {
+        '📸 Photos': 'photo',
+        '📐 Plans': 'plan',
+        '✅ Documents': 'pv'
+      };
+
+      // Ajouter chaque document
+      data.documents.forEach(doc => {
+        const cat = categoryMap[doc.category] || 'pv';
+        
+        documents[cat].push({
+          id: doc.id || (cat + Date.now()),
+          nom: doc.name,
+          date: doc.date,
+          desc: doc.description,
+          url: doc.url,
+          preview: doc.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'placeholder'
+        });
+      });
+    }
+
+    // Afficher les documents
+    render();
+  } catch (error) {
+    console.error('Erreur chargement documents:', error);
+    // Si erreur, afficher juste render() avec vide
+    render();
+  }
+}
+
+// ============================================
 // INITIALISATION
 // ============================================
 
-render();
+loadDocuments();
 </script>
 
 </body>
