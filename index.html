@@ -1031,7 +1031,7 @@ function addDocument() {
     })
     .then(response => response.json())
     .then(data => {
-      if (data.ok) {
+      if (data.success) {
         // Ajouter le document avec l'URL réelle
         const newDoc = {
           id: category + Date.now(),
@@ -1063,7 +1063,7 @@ function addDocument() {
 
         showMessage('Document uploadé avec succès !', true);
       } else {
-        showMessage('Erreur: ' + data.error, false, false);
+        showMessage('Erreur: ' + (data.message || 'Erreur inconnue'), false, false);
       }
     })
     .catch(error => {
@@ -1358,8 +1358,8 @@ async function loadDocuments() {
 
     const result = JSON.parse(responseText);
 
-    if (!result || result.ok !== true) {
-      throw new Error(result && result.error ? result.error : "Réponse Apps Script invalide");
+    if (!result || result.success !== true) {
+      throw new Error(result && result.message ? result.message : "Réponse Apps Script invalide");
     }
 
     const data = Array.isArray(result.data) ? result.data : [];
@@ -1374,12 +1374,13 @@ async function loadDocuments() {
     };
 
     data.forEach(doc => {
+      if (!doc.name || !doc.url) return; // Sauter les docs incomplets
       const cat = categoryMap[doc.cat] || 'pv';
       documents[cat].push({
-        id: doc.id,
+        id: doc.id || '',
         nom: doc.name,
-        date: doc.date,
-        desc: doc.desc,
+        date: doc.date || '',
+        desc: doc.desc || '',
         url: doc.url,
         preview: doc.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'placeholder'
       });
