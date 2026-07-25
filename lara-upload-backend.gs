@@ -5,7 +5,7 @@
 
 const CONFIG = {
   SHEET_ID: "15PMBsiozp37HOUGL4uJefme4nNzpJ3I2bBFlwZ4AyVs",
-  DRIVE_FOLDER_ID: "VOTRE_FOLDER_ID_ICI",
+  DRIVE_FOLDER_ID: "1uPol8K9ZzJgf_cRB-mT_0QpqB_ZnEuka",
   SHEET_NAME: "Feuille 1"
 };
 
@@ -259,4 +259,60 @@ function sendResponse(success, message, data = {}) {
   return ContentService
     .createTextOutput(JSON.stringify(response))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ============================================
+// BONUS - Utilitaires d'administration
+// ============================================
+
+/**
+ * Crée automatiquement la structure de dossiers LARA dans Google Drive
+ * Exécute cette fonction UNE FOIS via le menu "Exécuter"
+ */
+function createLARAFolder() {
+  try {
+    // Crée un dossier parent avec timestamp
+    const folder = DriveApp.createFolder('LARA-Chantier-' + new Date().getTime());
+    
+    // Crée les sous-dossiers
+    folder.createFolder('📸 Photos');
+    folder.createFolder('📐 Plans');
+    folder.createFolder('✅ Documents');
+    
+    const folderId = folder.getId();
+    Logger.log(`✅ Dossier LARA créé: ${folderId}`);
+    Logger.log(`👉 Mettez à jour CONFIG.DRIVE_FOLDER_ID = "${folderId}"`);
+    
+    return folderId;
+  } catch (error) {
+    Logger.log("Erreur création dossier: " + error);
+    return null;
+  }
+}
+
+/**
+ * Compte les documents par catégorie
+ */
+function countDocuments() {
+  try {
+    const sheet = SpreadsheetApp.openById(CONFIG.SHEET_ID).getSheetByName(CONFIG.SHEET_NAME);
+    const data = sheet.getDataRange().getValues();
+    
+    let photos = 0, plans = 0, docs = 0;
+    
+    for (let i = 1; i < data.length; i++) {
+      const cat = data[i][0];
+      if (cat.includes('📸')) photos++;
+      else if (cat.includes('📐')) plans++;
+      else if (cat.includes('✅')) docs++;
+    }
+    
+    Logger.log(`📊 RÉSUMÉ:`);
+    Logger.log(`   📸 Photos: ${photos}`);
+    Logger.log(`   📐 Plans: ${plans}`);
+    Logger.log(`   ✅ Documents: ${docs}`);
+    Logger.log(`   📁 Total: ${photos + plans + docs}`);
+  } catch (error) {
+    Logger.log("Erreur count: " + error);
+  }
 }
