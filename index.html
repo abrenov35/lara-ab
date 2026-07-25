@@ -367,6 +367,52 @@
       box-shadow: 0 2px 4px rgba(245, 101, 101, 0.3);
     }
 
+    /* MODAL MESSAGE (Succès/Erreur) */
+    .modal-message-content {
+      max-width: 350px;
+      padding: 40px 32px;
+      text-align: center;
+    }
+
+    .modal-message-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .modal-message-icon {
+      font-size: 48px;
+      line-height: 1;
+    }
+
+    #messageText {
+      color: var(--navy);
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .btn-message-ok {
+      background: var(--navy);
+      color: white;
+      border: none;
+      border-radius: 24px;
+      padding: 12px 32px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 120px;
+    }
+
+    .btn-message-ok:hover {
+      background: var(--blue);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(13, 58, 102, 0.2);
+    }
+
     /* MODAL AJOUTER */
     .modal-add-header {
       display: flex;
@@ -831,6 +877,17 @@
   </div>
 </div>
 
+<!-- MODAL MESSAGE (Succès/Erreur) -->
+<div class="modal" id="modalMessage">
+  <div class="modal-content modal-message-content">
+    <div class="modal-message-body">
+      <div class="modal-message-icon" id="messageIcon">✅</div>
+      <p id="messageText"></p>
+      <button class="btn-message-ok" onclick="closeMessageModal()">OK</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ============================================
 // DONNÉES
@@ -921,12 +978,12 @@ function addDocument() {
   const desc = document.getElementById('addDescription').value || document.getElementById('captureDescription').value;
 
   if (!category) {
-    alert('Veuillez choisir une catégorie');
+    showMessage('Veuillez choisir une catégorie', false);
     return;
   }
 
   if (!date) {
-    alert('Veuillez choisir une date');
+    showMessage('Veuillez choisir une date', false);
     return;
   }
 
@@ -935,7 +992,7 @@ function addDocument() {
   const file = fileInput.files[0];
 
   if (!file) {
-    alert('Veuillez sélectionner un fichier');
+    showMessage('Veuillez sélectionner un fichier', false);
     return;
   }
 
@@ -988,14 +1045,14 @@ function addDocument() {
           document.getElementById(categoryId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 100);
 
-        alert('✅ Document uploadé avec succès !');
+        showMessage('Document uploadé avec succès !', true);
       } else {
-        alert('❌ Erreur: ' + data.message);
+        showMessage('Erreur: ' + data.message, false, false);
       }
     })
     .catch(error => {
       console.error('Erreur:', error);
-      alert('❌ Erreur d\'upload: ' + error.message);
+      showMessage('Erreur d\'upload: ' + error.message, false, false);
     })
     .finally(() => {
       // Remettre le bouton à la normale
@@ -1159,6 +1216,40 @@ function confirmDelete() {
   closeConfirmModal();
 }
 
+// ============================================
+// MODAL MESSAGE (Succès/Erreur)
+// ============================================
+
+function showMessage(text, isSuccess = true, autoClose = true) {
+  const modal = document.getElementById('modalMessage');
+  const icon = document.getElementById('messageIcon');
+  const messageText = document.getElementById('messageText');
+  
+  // Définir l'icône et la couleur
+  if (isSuccess) {
+    icon.textContent = '✅';
+  } else {
+    icon.textContent = '❌';
+  }
+  
+  // Définir le texte
+  messageText.textContent = text;
+  
+  // Afficher le modal
+  modal.classList.add('active');
+  
+  // Auto-fermeture après 3 secondes si succès
+  if (autoClose && isSuccess) {
+    setTimeout(() => {
+      closeMessageModal();
+    }, 3000);
+  }
+}
+
+function closeMessageModal() {
+  document.getElementById('modalMessage').classList.remove('active');
+}
+
 function getCategoryName(category) {
   const names = { photo: 'Photo', plan: 'Plan', pv: 'Document' };
   return names[category] || 'Document';
@@ -1175,6 +1266,10 @@ document.getElementById('modalView')?.addEventListener('click', function(e) {
 
 document.getElementById('modalConfirm')?.addEventListener('click', function(e) {
   if (e.target === this) closeConfirmModal();
+});
+
+document.getElementById('modalMessage')?.addEventListener('click', function(e) {
+  if (e.target === this) closeMessageModal();
 });
 
 // ============================================
