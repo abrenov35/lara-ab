@@ -909,7 +909,7 @@ const documents = {
 // CONFIGURATION UPLOAD
 // ============================================
 
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwQGY1isb18YI70Gwf0VmppApwh0vs1L9uIcJ3JzLfivYAC_FQ1B6b8ZNbsKVdLC8Sj/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwdRuw0vfbxxr2zElolHpl0eX4jYGXMHONnZA1Cfe2rTbtmv3Pj_5sm06AiD47iz6_G/exec";
 
 // ============================================
 // MODAL AJOUTER
@@ -1304,10 +1304,10 @@ document.getElementById('modalMessage')?.addEventListener('click', function(e) {
 
 async function loadDocuments() {
   try {
-    const response = await fetch(WEB_APP_URL + '?action=list');
-    const data = await response.json();
+    const r = await fetch(WEB_APP_URL, {method: 'GET'});
+    const j = await r.json();
     
-    if (data.ok && data.data && data.data.length > 0) {
+    if (j.ok && j.data && j.data.length > 0) {
       documents = {
         photo: [],
         plan: [],
@@ -1320,7 +1320,7 @@ async function loadDocuments() {
         '✅ Documents': 'pv'
       };
       
-      data.data.forEach(doc => {
+      j.data.forEach(doc => {
         const cat = categoryMap[doc.cat] || 'pv';
         documents[cat].push({
           id: doc.id,
@@ -1335,7 +1335,7 @@ async function loadDocuments() {
     
     render();
   } catch (error) {
-    console.log('LARA démarrée (Sheets en chargement...)');
+    console.log('LARA démarrée');
     render();
   }
 }
