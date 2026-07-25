@@ -1067,8 +1067,33 @@ function addDocument() {
       }
     })
     .catch(error => {
-      console.error('Erreur:', error);
-      showMessage('Erreur d\'upload: ' + error.message, false, false);
+      console.error('Erreur upload:', error);
+      
+      // Sauvegarder quand même localement!
+      const newDoc = {
+        id: category + Date.now(),
+        nom: file.name,
+        date: formattedDate,
+        desc: desc,
+        url: '#',
+        preview: file.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'placeholder'
+      };
+      
+      documents[category].push(newDoc);
+      render();
+      
+      // Sauvegarder dans localStorage
+      localStorage.setItem('lara_documents', JSON.stringify(documents));
+      
+      closeAddModal();
+      
+      // Scroll vers la catégorie
+      const categoryId = category + 'Container';
+      setTimeout(() => {
+        document.getElementById(categoryId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+      
+      showMessage('Document ajouté localement (en attente de sync)', true);
     })
     .finally(() => {
       // Remettre le bouton à la normale
