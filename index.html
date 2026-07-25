@@ -1363,7 +1363,7 @@ async function loadDocuments() {
     }
 
     const data = Array.isArray(result.data) ? result.data : [];
-    console.log(data.length + " document(s) reçu(s)");
+    console.log(data.length + " document(s) reçu(s) depuis le Sheets");
 
     documents = { photo: [], plan: [], pv: [] };
 
@@ -1387,10 +1387,29 @@ async function loadDocuments() {
 
     console.log("Variable documents après affectation :", documents);
 
+    // Le fetch a réussi: on sauvegarde comme copie locale à jour
+    localStorage.setItem('lara_documents', JSON.stringify(documents));
+
     render();
 
   } catch (error) {
-    console.error("Erreur loadDocuments :", error);
+    // Le fetch a échoué (CORS ou autre): on retombe sur la dernière copie connue
+    console.error("Erreur loadDocuments (fetch Sheets) :", error);
+    console.log("Repli sur localStorage...");
+
+    const saved = localStorage.getItem('lara_documents');
+    if (saved) {
+      try {
+        documents = JSON.parse(saved);
+        console.log("Documents restaurés depuis localStorage :", documents);
+      } catch (parseErr) {
+        console.error("localStorage corrompu :", parseErr);
+        documents = { photo: [], plan: [], pv: [] };
+      }
+    } else {
+      console.log("Aucune copie locale disponible - affichage vide");
+    }
+
     render();
   }
 }
