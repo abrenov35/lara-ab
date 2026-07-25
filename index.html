@@ -6,15 +6,19 @@
   <title>LARA - Gestion Documentaire de Chantier</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
       background: #f9fafb;
       padding: 20px;
     }
+    
     .container {
       max-width: 1000px;
       margin: 0 auto;
     }
+    
+    /* HEADER */
     header {
       background: linear-gradient(135deg, #0d3a66 0%, #185fa5 100%);
       color: white;
@@ -24,15 +28,19 @@
       margin-bottom: 40px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
+    
     header h1 {
       font-size: 2.5em;
       margin-bottom: 8px;
       font-weight: 700;
     }
+    
     header p {
       font-size: 1.1em;
       opacity: 0.95;
     }
+    
+    /* SECTION */
     .section {
       background: white;
       border-radius: 12px;
@@ -41,175 +49,251 @@
       border: 1px solid #e0e0e0;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-    h2 {
+    
+    .section h2 {
       color: #185fa5;
       margin-bottom: 24px;
-      font-size: 28px;
-      text-align: center;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    .grid-3 {
+    
+    /* CATÉGORIES */
+    .categories {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 24px;
-      margin: 30px 0;
     }
-    .card {
+    
+    .category-card {
       background: white;
       border: 2px solid #e0e0e0;
       border-radius: 12px;
-      padding: 24px;
-      text-align: center;
+      overflow: hidden;
       transition: all 0.3s ease;
     }
-    .card:hover {
+    
+    .category-card:hover {
       border-color: #185fa5;
       box-shadow: 0 8px 24px rgba(24, 95, 165, 0.15);
       transform: translateY(-4px);
     }
-    .card-icon {
-      font-size: 3.5em;
-      margin-bottom: 16px;
-    }
-    .card h3 {
-      color: #185fa5;
-      font-size: 20px;
-      margin-bottom: 12px;
-    }
-    .card p {
-      color: #666;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    .demo-section {
-      background: #f9fafb;
-      border-radius: 12px;
-      padding: 30px;
-      margin: 30px 0;
-    }
-    .demo-title {
-      font-size: 18px;
+    
+    .category-header {
+      padding: 20px;
       font-weight: 600;
-      color: #333;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .demo-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-top: 20px;
-    }
-    @media (max-width: 768px) {
-      .demo-grid { grid-template-columns: 1fr; }
-      header h1 { font-size: 2em; }
-    }
-    .list-demo {
-      background: white;
-      border-radius: 8px;
-      padding: 16px;
-      border: 1px solid #e0e0e0;
-    }
-    .list-demo-header {
-      background: #185fa5;
       color: white;
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 12px;
-      font-weight: 600;
-      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 16px;
     }
-    .list-item {
+    
+    .category-header.photo { background: #ffd9b3; color: #8d4a0a; }
+    .category-header.plan { background: #e0c3fc; color: #553399; }
+    .category-header.pv { background: #c6f6d5; color: #22543d; }
+    
+    .category-count {
+      background: rgba(255,255,255,0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    
+    .category-body {
+      padding: 20px;
+      min-height: 200px;
+    }
+    
+    .document-list {
+      list-style: none;
+    }
+    
+    .document-item {
       padding: 12px;
       border-bottom: 1px solid #f0f0f0;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
     }
-    .list-item:last-child {
+    
+    .document-item:last-child {
       border-bottom: none;
     }
-    .list-item-name {
+    
+    .document-name {
+      flex: 1;
       font-weight: 600;
       color: #333;
       font-size: 14px;
+      word-break: break-word;
     }
+    
+    .document-date {
+      font-size: 12px;
+      color: #999;
+      white-space: nowrap;
+    }
+    
     .btn-voir {
       background: #0d3a66;
       color: white;
       border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 12px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
     }
+    
     .btn-voir:hover {
       background: #185fa5;
+      transform: scale(1.05);
     }
-    .popup-demo {
-      background: white;
-      border: 2px dashed #185fa5;
-      border-radius: 8px;
-      padding: 20px;
+    
+    .empty-state {
       text-align: center;
-      min-height: 200px;
+      color: #999;
+      padding: 20px;
+      font-size: 14px;
+    }
+    
+    .empty-state-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+    
+    /* MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .modal-header h3 {
+      color: #185fa5;
+      font-size: 20px;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #999;
+      padding: 0;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
     }
-    .popup-title {
-      font-weight: 600;
-      color: #185fa5;
-      margin-bottom: 12px;
-      font-size: 14px;
-    }
-    .popup-icon {
-      font-size: 3em;
-      margin-bottom: 12px;
-    }
-    .popup-filename {
+    
+    .modal-close:hover {
       color: #333;
-      font-weight: 600;
-      font-size: 14px;
-      margin-bottom: 12px;
     }
-    .highlight-box {
+    
+    .modal-body {
+      margin-bottom: 20px;
+    }
+    
+    .modal-info {
+      background: #f9fafb;
+      padding: 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+    }
+    
+    .modal-link {
+      display: inline-block;
+      margin-top: 16px;
+      background: #185fa5;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .modal-link:hover {
+      background: #0d3a66;
+      transform: translateY(-2px);
+    }
+    
+    /* INFO BOX */
+    .info-box {
       background: #e6f0ff;
       border-left: 4px solid #185fa5;
-      padding: 16px;
-      border-radius: 4px;
-      margin: 20px 0;
-    }
-    .highlight-box strong {
-      color: #185fa5;
-    }
-    .storage-explanation {
-      background: #fff4e6;
-      border-left: 4px solid #ff9800;
       padding: 16px;
       border-radius: 4px;
       margin: 20px 0;
       font-size: 14px;
       line-height: 1.6;
     }
-    .storage-explanation strong {
-      color: #ff9800;
+    
+    .info-box strong {
+      color: #185fa5;
     }
-    .cta {
-      text-align: center;
-      margin-top: 40px;
-      padding: 30px;
-      background: linear-gradient(135deg, #e6f0ff 0%, #f0e6ff 100%);
-      border-radius: 12px;
+    
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      header h1 { font-size: 2em; }
+      .section { padding: 20px; }
+      .categories { grid-template-columns: 1fr; }
     }
-    .cta h2 {
-      margin-bottom: 16px;
+    
+    /* ANIMATION SPINNER */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #185fa5;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
     }
-    .cta p {
-      font-size: 15px;
-      color: #333;
-      margin-bottom: 20px;
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -217,148 +301,243 @@
 
 <div class="container">
 
+  <!-- HEADER -->
   <header>
     <h1>📄 LARA</h1>
-    <p>Gestion Documentaire de Chantier - Simple & Efficace</p>
+    <p>Gestion Documentaire de Chantier</p>
   </header>
 
-  <!-- LES 3 PILIERS -->
+  <!-- INFO -->
   <div class="section">
-    <h2>Les 3 Points Clés</h2>
-    
-    <div class="grid-3">
-      <!-- PILIER 1: AFFICHAGE -->
-      <div class="card">
-        <div class="card-icon">📋</div>
-        <h3>Affichage Simple</h3>
-        <p>
-          Tous vos documents dans une <strong>liste claire et organisée</strong>. 
-          Pas de navigation confuse, tout est visible d'un coup.
-        </p>
-      </div>
-
-      <!-- PILIER 2: POP-UP -->
-      <div class="card">
-        <div class="card-icon">👁️</div>
-        <h3>Pop-up Rapide</h3>
-        <p>
-          Un clic sur <strong>"VOIR"</strong> et le document s'ouvre dans une 
-          fenêtre pop-up. Visualisation instantanée et directe.
-        </p>
-      </div>
-
-      <!-- PILIER 3: STOCKAGE -->
-      <div class="card">
-        <div class="card-icon">☁️</div>
-        <h3>Stockage Sécurisé</h3>
-        <p>
-          Les fichiers sont stockés <strong>chez Google Drive</strong>, 
-          pas dans LARA. Sécurité maximale et sauvegarde automatique.
-        </p>
-      </div>
+    <div class="info-box">
+      <strong>💡 Comment ça marche ?</strong><br>
+      LARA affiche tous vos documents de chantier (Photos, Plans, PV) dans une liste simple. 
+      Cliquez "👁️ VOIR" pour ouvrir un document. Les fichiers sont stockés de manière sécurisée chez Google Drive.
     </div>
   </div>
 
-  <!-- DÉMONSTRATION VISUELLE -->
+  <!-- CATÉGORIES -->
   <div class="section">
-    <h2>Comment ça Marche</h2>
+    <h2>📋 Mes Documents</h2>
     
-    <div class="demo-section">
-      <div class="demo-title">1️⃣ Affichage Simple dans LARA</div>
+    <div class="categories">
       
-      <div class="list-demo">
-        <div class="list-demo-header">📸 Photos (2)</div>
-        <div class="list-item">
-          <span class="list-item-name">📸 Facade_Avant.jpg</span>
-          <button class="btn-voir">👁️ VOIR</button>
+      <!-- PHOTOS -->
+      <div class="category-card">
+        <div class="category-header photo">
+          <span>📸 Photos</span>
+          <span class="category-count" id="photoCount">0</span>
         </div>
-        <div class="list-item">
-          <span class="list-item-name">📸 Facade_Travaux_22_07.jpg</span>
-          <button class="btn-voir">👁️ VOIR</button>
-        </div>
-
-        <div class="list-demo-header" style="margin-top: 16px;">📐 Plans (1)</div>
-        <div class="list-item">
-          <span class="list-item-name">📐 Plan_Etage_v2.pdf</span>
-          <button class="btn-voir">👁️ VOIR</button>
-        </div>
-
-        <div class="list-demo-header" style="margin-top: 16px;">✅ PV Réception (1)</div>
-        <div class="list-item">
-          <span class="list-item-name">✅ PV_Reception_22_07.pdf</span>
-          <button class="btn-voir">👁️ VOIR</button>
+        <div class="category-body">
+          <ul class="document-list" id="photoList">
+            <li class="empty-state">
+              <div class="empty-state-icon">📸</div>
+              <p>Aucune photo pour le moment</p>
+            </li>
+          </ul>
         </div>
       </div>
 
-      <div class="highlight-box" style="margin-top: 16px;">
-        <strong>✓ Tout visible d'un coup</strong><br>
-        Pas de recherche, pas de navigation - la liste dit tout.
+      <!-- PLANS -->
+      <div class="category-card">
+        <div class="category-header plan">
+          <span>📐 Plans</span>
+          <span class="category-count" id="planCount">0</span>
+        </div>
+        <div class="category-body">
+          <ul class="document-list" id="planList">
+            <li class="empty-state">
+              <div class="empty-state-icon">📐</div>
+              <p>Aucun plan pour le moment</p>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
 
-    <div class="demo-section">
-      <div class="demo-title">2️⃣ Pop-up au Clic "VOIR"</div>
-      
-      <div class="popup-demo">
-        <div class="popup-title">Pop-up Document</div>
-        <div class="popup-icon">📸</div>
-        <div class="popup-filename">Facade_Avant.jpg</div>
-        <p style="font-size: 12px; color: #999;">Image affichée ici</p>
+      <!-- PV RÉCEPTION -->
+      <div class="category-card">
+        <div class="category-header pv">
+          <span>✅ PV de Réception</span>
+          <span class="category-count" id="pvCount">0</span>
+        </div>
+        <div class="category-body">
+          <ul class="document-list" id="pvList">
+            <li class="empty-state">
+              <div class="empty-state-icon">✅</div>
+              <p>Aucun PV pour le moment</p>
+            </li>
+          </ul>
+        </div>
       </div>
 
-      <div class="highlight-box" style="margin-top: 16px;">
-        <strong>✓ Visualisation instantanée</strong><br>
-        1 clic = document ouvert dans une fenêtre modale
-      </div>
-    </div>
-
-    <div class="storage-explanation">
-      <strong>3️⃣ Stockage chez Google Drive</strong><br>
-      Les fichiers réels sont stockés <strong>chez Google</strong>, pas dans LARA.
-      LARA n'affiche que les <strong>liens</strong> et les <strong>noms</strong>.
-      Quand vous cliquez "VOIR", vous accédez aux fichiers de Google Drive.
     </div>
   </div>
 
-  <!-- RÉSUMÉ VISUEL -->
+  <!-- EXPLICATION -->
   <div class="section">
-    <h2>Le Flux</h2>
+    <h2>🔍 Détails</h2>
     
-    <div style="text-align: center; margin: 30px 0;">
-      <div style="display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;">
-        <div style="background: #e6f0ff; padding: 16px 24px; border-radius: 8px; font-weight: 600; color: #185fa5;">
-          📱 LARA<br><small style="font-weight: normal; font-size: 12px;">Liste visible</small>
-        </div>
-        
-        <div style="font-size: 24px; color: #185fa5;">→</div>
-        
-        <div style="background: #f0f4f8; padding: 16px 24px; border-radius: 8px; font-weight: 600; color: #333;">
-          👁️ Pop-up<br><small style="font-weight: normal; font-size: 12px;">Document ouvert</small>
-        </div>
-        
-        <div style="font-size: 24px; color: #185fa5;">→</div>
-        
-        <div style="background: #fff4e6; padding: 16px 24px; border-radius: 8px; font-weight: 600; color: #ff9800;">
-          ☁️ Google Drive<br><small style="font-weight: normal; font-size: 12px;">Stockage réel</small>
-        </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+      
+      <div style="background: #e6f0ff; border-left: 4px solid #185fa5; padding: 16px; border-radius: 6px;">
+        <strong style="color: #185fa5;">📋 Liste Simple</strong>
+        <p style="font-size: 14px; color: #666; margin-top: 8px;">
+          Tous vos documents affichés d'un coup, bien organisés par catégorie.
+        </p>
       </div>
-    </div>
 
-    <div class="highlight-box">
-      <strong>La Magie de LARA :</strong> Interface simple + Popup rapide + Stockage sécurisé ailleurs
-    </div>
-  </div>
+      <div style="background: #e6f0ff; border-left: 4px solid #185fa5; padding: 16px; border-radius: 6px;">
+        <strong style="color: #185fa5;">👁️ Pop-up Rapide</strong>
+        <p style="font-size: 14px; color: #666; margin-top: 8px;">
+          1 clic sur "VOIR" et le document s'ouvre. Pas de complications.
+        </p>
+      </div>
 
-  <!-- CALL TO ACTION -->
-  <div class="cta">
-    <h2>🚀 C'est ça, LARA !</h2>
-    <p>
-      Une liste claire de vos documents → 1 clic → document ouvert<br>
-      Les fichiers restent chez Google. Vous voyez juste une belle interface.
-    </p>
+      <div style="background: #e6f0ff; border-left: 4px solid #185fa5; padding: 16px; border-radius: 6px;">
+        <strong style="color: #185fa5;">☁️ Stockage Google</strong>
+        <p style="font-size: 14px; color: #666; margin-top: 8px;">
+          Les fichiers restent chez Google Drive, sécurisés et sauvegardés.
+        </p>
+      </div>
+
+    </div>
   </div>
 
 </div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle"></h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-info" id="modalInfo"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// DONNÉES DE DÉMONSTRATION
+// ============================================
+
+const documents = {
+  photo: [
+    { id: 'photo1', nom: 'Facade_Avant.jpg', date: '25/07/2026', url: '#' },
+    { id: 'photo2', nom: 'Facade_Travaux_15_07.jpg', date: '15/07/2026', url: '#' }
+  ],
+  plan: [
+    { id: 'plan1', nom: 'Plan_Etage_v2.pdf', date: '20/07/2026', url: '#' }
+  ],
+  pv: [
+    { id: 'pv1', nom: 'PV_Reception_22_07.pdf', date: '22/07/2026', url: '#' }
+  ]
+};
+
+// ============================================
+// FONCTION: AFFICHER TOUS LES DOCUMENTS
+// ============================================
+
+function renderAll() {
+  renderCategory('photo');
+  renderCategory('plan');
+  renderCategory('pv');
+  updateCounts();
+}
+
+// ============================================
+// FONCTION: AFFICHER UNE CATÉGORIE
+// ============================================
+
+function renderCategory(category) {
+  const list = document.getElementById(category + 'List');
+  const docs = documents[category];
+  
+  if (docs.length === 0) {
+    list.innerHTML = '<li class="empty-state"><div class="empty-state-icon">📁</div><p>Aucun document pour le moment</p></li>';
+    return;
+  }
+  
+  list.innerHTML = docs.map(doc => `
+    <li class="document-item">
+      <div>
+        <div class="document-name">${doc.nom}</div>
+        <div class="document-date">${doc.date}</div>
+      </div>
+      <button class="btn-voir" onclick="viewDocument('${category}', '${doc.id}')">👁️ VOIR</button>
+    </li>
+  `).join('');
+}
+
+// ============================================
+// FONCTION: METTRE À JOUR LES COMPTEURS
+// ============================================
+
+function updateCounts() {
+  document.getElementById('photoCount').textContent = documents.photo.length;
+  document.getElementById('planCount').textContent = documents.plan.length;
+  document.getElementById('pvCount').textContent = documents.pv.length;
+}
+
+// ============================================
+// FONCTION: OUVRIR UN DOCUMENT (MODAL)
+// ============================================
+
+function viewDocument(category, docId) {
+  const doc = documents[category].find(d => d.id === docId);
+  
+  if (!doc) return;
+  
+  const modal = document.getElementById('modal');
+  const title = document.getElementById('modalTitle');
+  const info = document.getElementById('modalInfo');
+  
+  title.textContent = doc.nom;
+  
+  info.innerHTML = `
+    <p><strong>Fichier :</strong> ${doc.nom}</p>
+    <p><strong>Type :</strong> ${getCategoryName(category)}</p>
+    <p><strong>Date :</strong> ${doc.date}</p>
+    <p style="margin-top: 16px; color: #666; font-size: 13px;">
+      Ce document est stocké chez Google Drive. 
+      Cliquez le bouton ci-dessous pour l'ouvrir ou le télécharger.
+    </p>
+    <a href="${doc.url}" class="modal-link" target="_blank">📂 Ouvrir dans Google Drive</a>
+  `;
+  
+  modal.classList.add('active');
+}
+
+// ============================================
+// FONCTION: FERMER LA MODAL
+// ============================================
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+}
+
+// Fermer au clic en dehors
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ============================================
+// HELPER: Nom de la catégorie
+// ============================================
+
+function getCategoryName(category) {
+  const names = { photo: 'Photo', plan: 'Plan', pv: 'PV de Réception' };
+  return names[category] || 'Document';
+}
+
+// ============================================
+// INITIALISATION
+// ============================================
+
+renderAll();
+</script>
 
 </body>
 </html>
