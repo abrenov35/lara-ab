@@ -909,7 +909,7 @@ const documents = {
 // CONFIGURATION UPLOAD
 // ============================================
 
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwngAxmKFeCLAapsNbCVUCF_dKUj6DX394v4jgH4FfrLwvlJnGn220EcPbduThVjmaN/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwwVgsXx5AKab94wqNgg6Z4hYJIJY74Tum-4SAN4-KrTtVEQwFON6lZ4nNcOSICufp9yg/exec";
 
 // ============================================
 // MODAL AJOUTER
@@ -1015,22 +1015,23 @@ function addDocument() {
     const formattedDate = new Date(date).toLocaleDateString('fr-FR');
 
     // Envoyer au Web App
-    const params = new URLSearchParams({
+    const uploadData = {
       action: 'upload',
       category: category,
       fileName: file.name,
       date: formattedDate,
       description: desc,
       fileData: fileDataBase64
-    });
+    };
 
     fetch(WEB_APP_URL, {
       method: 'POST',
-      body: params
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(uploadData)
     })
     .then(response => response.json())
     .then(data => {
-      if (data.success) {
+      if (data.ok) {
         // Ajouter le document avec l'URL réelle
         const newDoc = {
           id: category + Date.now(),
@@ -1058,7 +1059,7 @@ function addDocument() {
 
         showMessage('Document uploadé avec succès !', true);
       } else {
-        showMessage('Erreur: ' + data.message, false, false);
+        showMessage('Erreur: ' + data.error, false, false);
       }
     })
     .catch(error => {
