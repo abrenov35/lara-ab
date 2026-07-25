@@ -171,6 +171,32 @@
       box-shadow: 0 2px 4px rgba(24, 95, 165, 0.2);
     }
 
+    .btn-delete {
+      background: #f56565;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      margin-left: 8px;
+    }
+
+    .btn-delete:hover {
+      background: #c53030;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(197, 48, 48, 0.2);
+    }
+
+    .document-actions {
+      display: flex;
+      gap: 0;
+      align-items: center;
+    }
+
     .empty-state {
       text-align: center;
       padding: 20px;
@@ -490,11 +516,24 @@
       .document-card {
         flex-direction: column;
         align-items: flex-start;
+        gap: 12px;
+      }
+
+      .document-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
       }
 
       .btn-voir {
         width: 100%;
         text-align: center;
+        margin-left: 0 !important;
+      }
+
+      .btn-delete {
+        margin-left: 0 !important;
       }
 
       header {
@@ -886,7 +925,10 @@ function renderCategory(category) {
         <div class="document-name">${doc.nom}</div>
         <div class="document-date">${doc.date}</div>
       </div>
-      <button class="btn-voir" onclick="viewDocument('${category}', '${doc.id}')">👁️ VOIR</button>
+      <div class="document-actions">
+        <button class="btn-voir" onclick="viewDocument('${category}', '${doc.id}')">👁️ VOIR</button>
+        <button class="btn-delete" onclick="deleteDocument('${category}', '${doc.id}')">🗑️</button>
+      </div>
     </div>
   `).join('');
 }
@@ -899,6 +941,22 @@ function updateCounts() {
   document.getElementById('photoCountBadge').textContent = documents.photo.length;
   document.getElementById('planCountBadge').textContent = documents.plan.length;
   document.getElementById('pvCountBadge').textContent = documents.pv.length;
+}
+
+function deleteDocument(category, docId) {
+  // Confirmation
+  const doc = documents[category].find(d => d.id === docId);
+  if (!doc) return;
+
+  if (!confirm(`Êtes-vous sûr de vouloir supprimer "${doc.nom}" ?`)) {
+    return;
+  }
+
+  // Supprimer le document
+  documents[category] = documents[category].filter(d => d.id !== docId);
+
+  // Rafraîchir l'affichage
+  render();
 }
 
 function getCategoryName(category) {
