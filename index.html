@@ -869,12 +869,20 @@ function setTodayDate() {
 }
 
 function resetForm() {
-  document.getElementById('addCategory').value = '';
-  document.getElementById('addFile').value = '';
-  document.getElementById('addDescription').value = '';
-  document.getElementById('addDate').value = '';
-  document.getElementById('fileLabel').textContent = '📎 Sélectionner un fichier ou le glisser ici';
-  document.getElementById('fileLabel').classList.remove('has-file');
+  const addCategory = document.getElementById('addCategory');
+  const addFile = document.getElementById('addFile');
+  const addDescription = document.getElementById('addDescription');
+  const addDate = document.getElementById('addDate');
+  const fileLabel = document.getElementById('fileLabel');
+  
+  if (addCategory) addCategory.value = '';
+  if (addFile) addFile.value = '';
+  if (addDescription) addDescription.value = '';
+  if (addDate) addDate.value = '';
+  if (fileLabel) {
+    fileLabel.textContent = '📎 Sélectionner un fichier ou le glisser ici';
+    fileLabel.classList.remove('has-file');
+  }
 }
 
 function triggerFileInput() {
