@@ -1364,6 +1364,11 @@ async function loadDocuments() {
 // ============================================
 
 render();
+
+// Charger les documents du Sheets après le rendu (asynchrone)
+setTimeout(() => {
+  loadDocuments();
+}, 100);
 </script>
 
 </body>
