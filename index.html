@@ -306,6 +306,67 @@
       color: var(--navy);
     }
 
+    /* MODAL CONFIRMATION SUPPRESSION */
+    .modal-confirm-content {
+      max-width: 400px;
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .modal-confirm-body {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .modal-confirm-body p {
+      color: var(--navy);
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .modal-confirm-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btn-confirm-cancel {
+      background: #f0f0f0;
+      color: var(--navy);
+      border: none;
+      border-radius: 24px;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-confirm-cancel:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-confirm-delete {
+      background: #f56565;
+      color: white;
+      border: none;
+      border-radius: 24px;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-confirm-delete:hover {
+      background: #c53030;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(245, 101, 101, 0.3);
+    }
+
     /* MODAL AJOUTER */
     .modal-add-header {
       display: flex;
@@ -757,6 +818,19 @@
   </div>
 </div>
 
+<!-- MODAL CONFIRMER SUPPRESSION -->
+<div class="modal" id="modalConfirm">
+  <div class="modal-content modal-confirm-content">
+    <div class="modal-confirm-body">
+      <p id="confirmMessage"></p>
+      <div class="modal-confirm-actions">
+        <button class="btn-confirm-cancel" onclick="closeConfirmModal()">Annuler</button>
+        <button class="btn-confirm-delete" onclick="confirmDelete()">🗑️ Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ============================================
 // DONNÉES
@@ -985,20 +1059,41 @@ function updateCounts() {
   document.getElementById('pvCountBadge').textContent = documents.pv.length;
 }
 
+// Variables pour la suppression
+let deleteContext = { category: null, docId: null };
+
 function deleteDocument(category, docId) {
-  // Confirmation
   const doc = documents[category].find(d => d.id === docId);
   if (!doc) return;
 
-  if (!confirm(`Êtes-vous sûr de vouloir supprimer "${doc.nom}" ?`)) {
-    return;
-  }
+  // Stocker le contexte
+  deleteContext = { category, docId };
+
+  // Afficher le modal de confirmation
+  const message = document.getElementById('confirmMessage');
+  message.textContent = `Êtes-vous sûr de vouloir supprimer "${doc.nom}" ?`;
+  
+  document.getElementById('modalConfirm').classList.add('active');
+}
+
+function closeConfirmModal() {
+  document.getElementById('modalConfirm').classList.remove('active');
+  deleteContext = { category: null, docId: null };
+}
+
+function confirmDelete() {
+  const { category, docId } = deleteContext;
+  
+  if (!category || !docId) return;
 
   // Supprimer le document
   documents[category] = documents[category].filter(d => d.id !== docId);
 
   // Rafraîchir l'affichage
   render();
+  
+  // Fermer le modal
+  closeConfirmModal();
 }
 
 function getCategoryName(category) {
@@ -1013,6 +1108,10 @@ document.getElementById('modalAdd')?.addEventListener('click', function(e) {
 
 document.getElementById('modalView')?.addEventListener('click', function(e) {
   if (e.target === this) closeViewModal();
+});
+
+document.getElementById('modalConfirm')?.addEventListener('click', function(e) {
+  if (e.target === this) closeConfirmModal();
 });
 
 // ============================================
