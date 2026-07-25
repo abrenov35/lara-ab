@@ -471,6 +471,37 @@
     }
 
     /* MODAL INFO */
+    .modal-preview {
+      background: #f5f5f5;
+      border: 1px solid rgba(22, 45, 73, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-preview img {
+      max-width: 100%;
+      max-height: 500px;
+      object-fit: contain;
+    }
+
+    .modal-preview-placeholder {
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+      padding: 40px 20px;
+    }
+
+    .modal-preview-placeholder-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
     .modal-info {
       background: #faf9f6;
       padding: 12px 14px;
@@ -720,6 +751,7 @@
       <button class="modal-close" onclick="closeViewModal()">✕</button>
     </div>
     <div class="modal-body">
+      <div class="modal-preview" id="modalPreview"></div>
       <div class="modal-info" id="modalInfo"></div>
     </div>
   </div>
@@ -732,14 +764,14 @@
 
 const documents = {
   photo: [
-    { id: 'photo1', nom: 'Facade_Avant.jpg', date: '25/07/2026', desc: 'Vue de la façade avant', url: '#' },
-    { id: 'photo2', nom: 'Facade_Travaux_15_07.jpg', date: '15/07/2026', desc: 'Travaux en cours', url: '#' }
+    { id: 'photo1', nom: 'Facade_Avant.jpg', date: '25/07/2026', desc: 'Vue de la façade avant', url: '#', preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"%3E%3Crect fill="%23e8e8e8" width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%23999"%3EFacade_Avant.jpg%3C/text%3E%3C/svg%3E' },
+    { id: 'photo2', nom: 'Facade_Travaux_15_07.jpg', date: '15/07/2026', desc: 'Travaux en cours', url: '#', preview: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"%3E%3Crect fill="%23e8e8e8" width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%23999"%3EFacade_Travaux_15_07.jpg%3C/text%3E%3C/svg%3E' }
   ],
   plan: [
-    { id: 'plan1', nom: 'Plan_Etage_v2.pdf', date: '20/07/2026', desc: 'Plan technique étage 1', url: '#' }
+    { id: 'plan1', nom: 'Plan_Etage_v2.pdf', date: '20/07/2026', desc: 'Plan technique étage 1', url: '#', preview: 'pdf' }
   ],
   pv: [
-    { id: 'pv1', nom: 'Document_22_07.pdf', date: '22/07/2026', desc: 'Document important', url: '#' }
+    { id: 'pv1', nom: 'Document_22_07.pdf', date: '22/07/2026', desc: 'Document important', url: '#', preview: 'pdf' }
   ]
 };
 
@@ -823,7 +855,8 @@ function addDocument() {
     nom: name,
     date: new Date(date).toLocaleDateString('fr-FR'),
     desc: desc,
-    url: '#'
+    url: '#',
+    preview: name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'placeholder'
   };
 
   documents[category].push(newDoc);
@@ -856,8 +889,38 @@ function viewDocument(category, docId) {
   const modal = document.getElementById('modalView');
   const title = document.getElementById('modalTitle');
   const info = document.getElementById('modalInfo');
+  const preview = document.getElementById('modalPreview');
 
   title.textContent = doc.nom;
+
+  // Afficher la preview
+  if (doc.preview) {
+    if (doc.preview === 'pdf') {
+      preview.innerHTML = `
+        <div class="modal-preview-placeholder">
+          <div class="modal-preview-placeholder-icon">📄</div>
+          <div>Fichier PDF</div>
+          <div style="font-size: 11px; margin-top: 8px; opacity: 0.7;">${doc.nom}</div>
+        </div>
+      `;
+    } else if (doc.preview.startsWith('http') || doc.preview.startsWith('data:')) {
+      preview.innerHTML = `<img src="${doc.preview}" alt="${doc.nom}">`;
+    } else {
+      preview.innerHTML = `
+        <div class="modal-preview-placeholder">
+          <div class="modal-preview-placeholder-icon">📁</div>
+          <div>Aperçu non disponible</div>
+        </div>
+      `;
+    }
+  } else {
+    preview.innerHTML = `
+      <div class="modal-preview-placeholder">
+        <div class="modal-preview-placeholder-icon">📁</div>
+        <div>Aperçu non disponible</div>
+      </div>
+    `;
+  }
 
   info.innerHTML = `
     <p><strong>Fichier :</strong> ${doc.nom}</p>
