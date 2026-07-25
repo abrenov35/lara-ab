@@ -15,17 +15,23 @@ const CONFIG = {
 
 function doPost(e) {
   try {
-    const action = e.parameter.action;
+    // Lire le JSON du body
+    const postData = e.postData.contents;
+    const payload = JSON.parse(postData);
+    const action = payload.action;
+    
+    Logger.log("Action reçue: " + action);
+    Logger.log("Payload: " + JSON.stringify(payload));
     
     if (action === 'upload') {
-      return handleUpload(e);
+      return handleUpload(payload);
     } else if (action === 'list') {
-      return handleList(e);
+      return handleList(payload);
     } else {
-      return sendResponse(false, "Action inconnue");
+      return sendResponse(false, "Action inconnue: " + action);
     }
   } catch (error) {
-    Logger.log("Erreur: " + error);
+    Logger.log("Erreur doPost: " + error);
     return sendResponse(false, "Erreur: " + error.toString());
   }
 }
@@ -71,12 +77,12 @@ function doGet(e) {
 // 1. HANDLE UPLOAD
 // ============================================
 
-function handleUpload(e) {
-  const category = e.parameter.category;
-  const date = e.parameter.date;
-  const description = e.parameter.description || "";
-  const fileName = e.parameter.fileName;
-  const fileData = e.parameter.fileData;
+function handleUpload(payload) {
+  const category = payload.category;
+  const date = payload.date;
+  const description = payload.description || "";
+  const fileName = payload.fileName;
+  const fileData = payload.fileData;
   
   if (!category || !date || !fileName || !fileData) {
     return sendResponse(false, "Paramètres manquants");
@@ -109,9 +115,9 @@ function handleUpload(e) {
 // 2. HANDLE LIST
 // ============================================
 
-function handleList(e) {
+function handleList(payload) {
   try {
-    const category = e.parameter.category;
+    const category = payload.category;
     
     const sheet = SpreadsheetApp.openById(CONFIG.SHEET_ID).getSheetByName(CONFIG.SHEET_NAME);
     const data = sheet.getDataRange().getValues();
