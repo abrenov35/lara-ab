@@ -909,7 +909,7 @@ const documents = {
 // CONFIGURATION UPLOAD
 // ============================================
 
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz2PDThiKwb74RRPTp741vAbJLVc5pvXiz66lHZN0c5udjrAYEKfIJxw_xkL_20lFY/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwNJ7uR9Hf-H01ykLe0LqPzYeTB9SGuM7H5D0T82A2V0aUjfXQIokm7f8ITSI5td7Oc/exec";
 
 // ============================================
 // MODAL AJOUTER
@@ -1302,52 +1302,54 @@ document.getElementById('modalMessage')?.addEventListener('click', function(e) {
 // CHARGER LES DOCUMENTS DEPUIS LE SHEETS (GET)
 // ============================================
 
-async function loadDocuments() {
-  try {
-    // Utiliser GET au lieu de POST (pas bloqué par CORS!)
-    const response = await fetch(WEB_APP_URL + '?action=list', {
-      method: 'GET'
-    });
-
-    const data = await response.json();
-
-    if (data.success && data.documents && data.documents.length > 0) {
-      // Réinitialiser les documents
-      documents = {
-        photo: [],
-        plan: [],
-        pv: []
-      };
-
-      // Catégories mappées
-      const categoryMap = {
-        '📸 Photos': 'photo',
-        '📐 Plans': 'plan',
-        '✅ Documents': 'pv'
-      };
-
-      // Ajouter chaque document
-      data.documents.forEach(doc => {
-        const cat = categoryMap[doc.category] || 'pv';
+function loadDocuments() {
+  const callbackName = 'jsonpCallback_' + Date.now();
+  
+  window[callbackName] = function(data) {
+    try {
+      if (data.ok && data.data && data.data.length > 0) {
+        documents = {
+          photo: [],
+          plan: [],
+          pv: []
+        };
         
-        documents[cat].push({
-          id: doc.id || (cat + Date.now()),
-          nom: doc.name,
-          date: doc.date,
-          desc: doc.description,
-          url: doc.url,
-          preview: doc.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'placeholder'
+        const categoryMap = {
+          '📸 Photos': 'photo',
+          '📐 Plans': 'plan',
+          '✅ Documents': 'pv'
+        };
+        
+        data.data.forEach(doc => {
+          const cat = categoryMap[doc.cat] || 'pv';
+          documents[cat].push({
+            id: doc.id,
+            nom: doc.name,
+            date: doc.date,
+            desc: doc.desc,
+            url: doc.url,
+            preview: doc.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'placeholder'
+          });
         });
-      });
+      }
+      
+      render();
+    } catch (error) {
+      console.log('Erreur parsing JSONP:', error);
+      render();
     }
-
-    // Afficher les documents (vide ou rempli)
+    
+    delete window[callbackName];
+  };
+  
+  const script = document.createElement('script');
+  script.src = WEB_APP_URL + '?action=list&callback=' + callbackName;
+  script.onerror = () => {
+    console.log('LARA démarrée');
     render();
-  } catch (error) {
-    // Silencieusement ignorer l'erreur au démarrage
-    console.log('LARA démarrée (Sheets en chargement...)');
-    render();
-  }
+    delete window[callbackName];
+  };
+  document.head.appendChild(script);
 }
 
 // ============================================
