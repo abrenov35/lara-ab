@@ -575,7 +575,7 @@
   <!-- INFO BOX -->
   <div class="section">
     <div class="info-box">
-      <strong>💡 Comment ça marche :</strong> LARA affiche vos documents (Photos, Plans, PV) dans une liste simple. 
+      <strong>💡 Comment ça marche :</strong> LARA affiche vos documents (Photos, Plans, Documents) dans une liste simple. 
       Cliquez "➕ Ajouter un Document" ou "👁️ VOIR" pour ouvrir un document stocké chez Google Drive.
     </div>
 
@@ -607,16 +607,16 @@
     </div>
   </div>
 
-  <!-- PV RÉCEPTION -->
+  <!-- DOCUMENTS -->
   <div class="section">
     <div class="seclabel">
-      <span>✅ PV de Réception</span>
+      <span>✅ Documents</span>
       <span class="badge-count" id="pvCountBadge">0</span>
     </div>
     <div id="pvContainer" style="padding: 0 14px;">
       <div class="empty-state">
         <div class="empty-state-icon">✅</div>
-        <p>Aucun PV pour le moment</p>
+        <p>Aucun document pour le moment</p>
       </div>
     </div>
   </div>
@@ -645,7 +645,7 @@
             <option value="">— Choisir la catégorie —</option>
             <option value="photo">📸 Photos du Chantier</option>
             <option value="plan">📐 Plans Techniques</option>
-            <option value="pv">✅ PV de Réception</option>
+            <option value="pv">✅ Documents</option>
           </select>
         </div>
       </div>
@@ -676,7 +676,7 @@
             <option value="">— Choisir la catégorie —</option>
             <option value="photo">📸 Photos du Chantier</option>
             <option value="plan">📐 Plans Techniques</option>
-            <option value="pv">✅ PV de Réception</option>
+            <option value="pv">✅ Documents</option>
           </select>
         </div>
       </div>
@@ -739,7 +739,7 @@ const documents = {
     { id: 'plan1', nom: 'Plan_Etage_v2.pdf', date: '20/07/2026', desc: 'Plan technique étage 1', url: '#' }
   ],
   pv: [
-    { id: 'pv1', nom: 'PV_Reception_22_07.pdf', date: '22/07/2026', desc: 'Réception finale', url: '#' }
+    { id: 'pv1', nom: 'Document_22_07.pdf', date: '22/07/2026', desc: 'Document important', url: '#' }
   ]
 };
 
@@ -939,7 +939,7 @@ function deleteDocument(category, docId) {
 }
 
 function getCategoryName(category) {
-  const names = { photo: 'Photo', plan: 'Plan', pv: 'PV de Réception' };
+  const names = { photo: 'Photo', plan: 'Plan', pv: 'Document' };
   return names[category] || 'Document';
 }
 
