@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LARA - Gestion Documentaire de Chantier</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
+      background: #f9fafb;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    header {
+      background: linear-gradient(135deg, #0d3a66 0%, #185fa5 100%);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      border-radius: 12px;
+      margin-bottom: 40px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    header h1 {
+      font-size: 2.5em;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    header p {
+      font-size: 1.1em;
+      opacity: 0.95;
+    }
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    h2 {
+      color: #185fa5;
+      margin-bottom: 24px;
+      font-size: 28px;
+      text-align: center;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin: 30px 0;
+    }
+    .card {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      border-color: #185fa5;
+      box-shadow: 0 8px 24px rgba(24, 95, 165, 0.15);
+      transform: translateY(-4px);
+    }
+    .card-icon {
+      font-size: 3.5em;
+      margin-bottom: 16px;
+    }
+    .card h3 {
+      color: #185fa5;
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+    .card p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .demo-section {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 30px;
+      margin: 30px 0;
+    }
+    .demo-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 20px;
+    }
+    @media (max-width: 768px) {
+      .demo-grid { grid-template-columns: 1fr; }
+      header h1 { font-size: 2em; }
+    }
+    .list-demo {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid #e0e0e0;
+    }
+    .list-demo-header {
+      background: #185fa5;
+      color: white;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .list-item {
+      padding: 12px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .list-item:last-child {
+      border-bottom: none;
+    }
+    .list-item-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+    .btn-voir {
+      background: #0d3a66;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-voir:hover {
+      background: #185fa5;
+    }
+    .popup-demo {
+      background: white;
+      border: 2px dashed #185fa5;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .popup-title {
+      font-weight: 600;
+      color: #185fa5;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    .popup-icon {
+      font-size: 3em;
+      margin-bottom: 12px;
+    }
+    .popup-filename {
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .highlight-box {
+      background: #e6f0ff;
+      border-left: 4px solid #185fa5;
+      padding: 16px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    .highlight-box strong {
+      color: #185fa5;
+    }
+    .storage-explanation {
+      background: #fff4e6;
+      border-left: 4px solid #ff9800;
+      padding: 16px;
+      border-radius: 4px;
+      margin: 20px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .storage-explanation strong {
+      color: #ff9800;
+    }
+    .cta {
+      text-align: center;
+      margin-top: 40px;
+      padding: 30px;
+      background: linear-gradient(135deg, #e6f0ff 0%, #f0e6ff 100%);
+      border-radius: 12px;
+    }
+    .cta h2 {
+      margin-bottom: 16px;
+    }
+    .cta p {
+      font-size: 15px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>📄 LARA</h1>
+    <p>Gestion Documentaire de Chantier - Simple & Efficace</p>
+  </header>
+
+  <!-- LES 3 PILIERS -->
+  <div class="section">
+    <h2>Les 3 Points Clés</h2>
+    
+    <div class="grid-3">
+      <!-- PILIER 1: AFFICHAGE -->
+      <div class="card">
+        <div class="card-icon">📋</div>
+        <h3>Affichage Simple</h3>
+        <p>
+          Tous vos documents dans une <strong>liste claire et organisée</strong>. 
+          Pas de navigation confuse, tout est visible d'un coup.
+        </p>
+      </div>
+
+      <!-- PILIER 2: POP-UP -->
+      <div class="card">
+        <div class="card-icon">👁️</div>
+        <h3>Pop-up Rapide</h3>
+        <p>
+          Un clic sur <strong>"VOIR"</strong> et le document s'ouvre dans une 
+          fenêtre pop-up. Visualisation instantanée et directe.
+        </p>
+      </div>
+
+      <!-- PILIER 3: STOCKAGE -->
+      <div class="card">
+        <div class="card-icon">☁️</div>
+        <h3>Stockage Sécurisé</h3>
+        <p>
+          Les fichiers sont stockés <strong>chez Google Drive</strong>, 
+          pas dans LARA. Sécurité maximale et sauvegarde automatique.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DÉMONSTRATION VISUELLE -->
+  <div class="section">
+    <h2>Comment ça Marche</h2>
+    
+    <div class="demo-section">
+      <div class="demo-title">1️⃣ Affichage Simple dans LARA</div>
+      
+      <div class="list-demo">
+        <div class="list-demo-header">📸 Photos (2)</div>
+        <div class="list-item">
+          <span class="list-item-name">📸 Facade_Avant.jpg</span>
+          <button class="btn-voir">👁️ VOIR</button>
+        </div>
+        <div class="list-item">
+          <span class="list-item-name">📸 Facade_Travaux_22_07.jpg</span>
+          <button class="btn-voir">👁️ VOIR</button>
+        </div>
+
+        <div class="list-demo-header" style="margin-top: 16px;">📐 Plans (1)</div>
+        <div class="list-item">
+          <span class="list-item-name">📐 Plan_Etage_v2.pdf</span>
+          <button class="btn-voir">👁️ VOIR</button>
+        </div>
+
+        <div class="list-demo-header" style="margin-top: 16px;">✅ PV Réception (1)</div>
+        <div class="list-item">
+          <span class="list-item-name">✅ PV_Reception_22_07.pdf</span>
+          <button class="btn-voir">👁️ VOIR</button>
+        </div>
+      </div>
+
+      <div class="highlight-box" style="margin-top: 16px;">
+        <strong>✓ Tout visible d'un coup</strong><br>
+        Pas de recherche, pas de navigation - la liste dit tout.
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <div class="demo-title">2️⃣ Pop-up au Clic "VOIR"</div>
+      
+      <div class="popup-demo">
+        <div class="popup-title">Pop-up Document</div>
+        <div class="popup-icon">📸</div>
+        <div class="popup-filename">Facade_Avant.jpg</div>
+        <p style="font-size: 12px; color: #999;">Image affichée ici</p>
+      </div>
+
+      <div class="highlight-box" style="margin-top: 16px;">
+        <strong>✓ Visualisation instantanée</strong><br>
+        1 clic = document ouvert dans une fenêtre modale
+      </div>
+    </div>
+
+    <div class="storage-explanation">
+      <strong>3️⃣ Stockage chez Google Drive</strong><br>
+      Les fichiers réels sont stockés <strong>chez Google</strong>, pas dans LARA.
+      LARA n'affiche que les <strong>liens</strong> et les <strong>noms</strong>.
+      Quand vous cliquez "VOIR", vous accédez aux fichiers de Google Drive.
+    </div>
+  </div>
+
+  <!-- RÉSUMÉ VISUEL -->
+  <div class="section">
+    <h2>Le Flux</h2>
+    
+    <div style="text-align: center; margin: 30px 0;">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;">
+        <div style="background: #e6f0ff; padding: 16px 24px; border-radius: 8px; font-weight: 600; color: #185fa5;">
+          📱 LARA<br><small style="font-weight: normal; font-size: 12px;">Liste visible</small>
+        </div>
+        
+        <div style="font-size: 24px; color: #185fa5;">→</div>
+        
+        <div style="background: #f0f4f8; padding: 16px 24px; border-radius: 8px; font-weight: 600; color: #333;">
+          👁️ Pop-up<br><small style="font-weight: normal; font-size: 12px;">Document ouvert</small>
+        </div>
+        
+        <div style="font-size: 24px; color: #185fa5;">→</div>
+        
+        <div style="background: #fff4e6; padding: 16px 24px; border-radius: 8px; font-weight: 600; color: #ff9800;">
+          ☁️ Google Drive<br><small style="font-weight: normal; font-size: 12px;">Stockage réel</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>La Magie de LARA :</strong> Interface simple + Popup rapide + Stockage sécurisé ailleurs
+    </div>
+  </div>
+
+  <!-- CALL TO ACTION -->
+  <div class="cta">
+    <h2>🚀 C'est ça, LARA !</h2>
+    <p>
+      Une liste claire de vos documents → 1 clic → document ouvert<br>
+      Les fichiers restent chez Google. Vous voyez juste une belle interface.
+    </p>
+  </div>
+
+</div>
+
+</body>
+</html>
