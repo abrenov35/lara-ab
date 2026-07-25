@@ -909,7 +909,7 @@ const documents = {
 // CONFIGURATION UPLOAD
 // ============================================
 
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzJstR1rwM7ZXQUtMXxgpZSSW9JnaESNVTmLhNDGbBrzQpIL3_LyFzCMzN4uEpRjlU/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyEctjfj6acdWhZ9u-dEcREcZezAGfxV6tD348BLYkKreYDxjB9tN-44qZzTiQ4YyGN/exec";
 
 // ============================================
 // MODAL AJOUTER
@@ -1335,16 +1335,17 @@ document.getElementById('modalMessage')?.addEventListener('click', function(e) {
 // ============================================
 
 // ============================================
-// CHARGER LES DOCUMENTS (localStorage + Sheets)
+// CHARGER LES DOCUMENTS (Pattern Yaya)
 // ============================================
 
 async function loadDocuments() {
   try {
-    // Essayer de charger depuis le Sheets
     const r = await fetch(WEB_APP_URL, {method: 'GET'});
     const j = await r.json();
     
-    if (j.ok && j.data && j.data.length > 0) {
+    if (!j.ok) throw new Error(j.error || 'réponse invalide');
+    
+    if (j.data && j.data.length > 0) {
       documents = {
         photo: [],
         plan: [],
@@ -1368,22 +1369,11 @@ async function loadDocuments() {
           preview: doc.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'placeholder'
         });
       });
-      
-      // Sauvegarder dans localStorage
-      localStorage.setItem('lara_documents', JSON.stringify(documents));
-      render();
     }
+    
+    render();
   } catch (error) {
-    // Si erreur, charger depuis localStorage
-    console.log('Chargement depuis localStorage...');
-    const saved = localStorage.getItem('lara_documents');
-    if (saved) {
-      try {
-        documents = JSON.parse(saved);
-      } catch (e) {
-        documents = { photo: [], plan: [], pv: [] };
-      }
-    }
+    console.error(error);
     render();
   }
 }
