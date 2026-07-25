@@ -1298,25 +1298,15 @@ document.getElementById('modalMessage')?.addEventListener('click', function(e) {
 });
 
 // ============================================
-// CHARGER LES DOCUMENTS DEPUIS LE SHEETS
+// CHARGER LES DOCUMENTS DEPUIS LE SHEETS (GET)
 // ============================================
 
 async function loadDocuments() {
   try {
-    const params = new URLSearchParams({
-      action: 'list'
+    // Utiliser GET au lieu de POST (pas bloqué par CORS!)
+    const response = await fetch(WEB_APP_URL + '?action=list', {
+      method: 'GET'
     });
-
-    const response = await fetch(WEB_APP_URL, {
-      method: 'POST',
-      body: params
-    });
-
-    if (!response.ok) {
-      console.warn('Sheets non accessible au démarrage - affichage vide');
-      render();
-      return;
-    }
 
     const data = await response.json();
 
