@@ -909,7 +909,7 @@ const documents = {
 // CONFIGURATION UPLOAD
 // ============================================
 
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyEctjfj6acdWhZ9u-dEcREcZezAGfxV6tD348BLYkKreYDxjB9tN-44qZzTiQ4YyGN/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwHaydK-gS3rVC_SzPZ3n_ft0WNEBoaGktT-ThIo-1f2k7kzWIEW-0iUgtFgAICWBHp/exec";
 
 // ============================================
 // MODAL AJOUTER
@@ -1339,41 +1339,58 @@ document.getElementById('modalMessage')?.addEventListener('click', function(e) {
 // ============================================
 
 async function loadDocuments() {
+  console.log("Chargement des documents depuis :", WEB_APP_URL);
+
   try {
-    const r = await fetch(WEB_APP_URL, {method: 'GET'});
-    const j = await r.json();
-    
-    if (!j.ok) throw new Error(j.error || 'réponse invalide');
-    
-    if (j.data && j.data.length > 0) {
-      documents = {
-        photo: [],
-        plan: [],
-        pv: []
-      };
-      
-      const categoryMap = {
-        '📸 Photos': 'photo',
-        '📐 Plans': 'plan',
-        '✅ Documents': 'pv'
-      };
-      
-      j.data.forEach(doc => {
-        const cat = categoryMap[doc.cat] || 'pv';
-        documents[cat].push({
-          id: doc.id,
-          nom: doc.name,
-          date: doc.date,
-          desc: doc.desc,
-          url: doc.url,
-          preview: doc.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'placeholder'
-        });
-      });
+    const response = await fetch(WEB_APP_URL, {
+      method: "GET",
+      cache: "no-store"
+    });
+
+    const responseText = await response.text();
+
+    console.log("Statut HTTP :", response.status);
+    console.log("Réponse Apps Script :", responseText);
+
+    if (!response.ok) {
+      throw new Error("Erreur HTTP " + response.status + " : " + responseText);
     }
-    
+
+    const result = JSON.parse(responseText);
+
+    if (!result || result.ok !== true) {
+      throw new Error(result && result.error ? result.error : "Réponse Apps Script invalide");
+    }
+
+    const data = Array.isArray(result.data) ? result.data : [];
+    console.log(data.length + " document(s) reçu(s)");
+
+    documents = { photo: [], plan: [], pv: [] };
+
+    const categoryMap = {
+      '📸 Photos': 'photo',
+      '📐 Plans': 'plan',
+      '✅ Documents': 'pv'
+    };
+
+    data.forEach(doc => {
+      const cat = categoryMap[doc.cat] || 'pv';
+      documents[cat].push({
+        id: doc.id,
+        nom: doc.name,
+        date: doc.date,
+        desc: doc.desc,
+        url: doc.url,
+        preview: doc.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'placeholder'
+      });
+    });
+
+    console.log("Variable documents après affectation :", documents);
+
     render();
+
   } catch (error) {
-    console.error(error);
+    console.error("Erreur loadDocuments :", error);
     render();
   }
 }
