@@ -42,6 +42,13 @@
       border-radius: 10px;
       margin-bottom: 20px;
       box-shadow: 0 2px 8px rgba(22, 45, 73, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header .title {
+      flex: 1;
     }
 
     header h1 {
@@ -53,6 +60,24 @@
     header p {
       font-size: 14px;
       opacity: 0.9;
+    }
+
+    .header-btn {
+      background: white;
+      color: var(--blue);
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .header-btn:hover {
+      background: #f0f4f8;
+      transform: translateY(-1px);
     }
 
     .seclabel {
@@ -91,38 +116,6 @@
 
     .info-box strong {
       color: var(--blue);
-    }
-
-    .badge {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 6px;
-      text-align: center;
-    }
-
-    .b-photo {
-      background: #ffd9b3;
-      color: #8d4a0a;
-    }
-
-    .b-plan {
-      background: #e0c3fc;
-      color: #553399;
-    }
-
-    .b-pv {
-      background: #c6f6d5;
-      color: #22543d;
-    }
-
-    .badge-count {
-      background: rgba(255, 255, 255, 0.3);
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
     }
 
     .document-card {
@@ -190,7 +183,46 @@
       margin-bottom: 8px;
     }
 
-    /* MODAL */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      background: #faf9f6;
+      border: 1px solid rgba(22, 45, 73, 0.08);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .stat small {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.6;
+      margin-bottom: 4px;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 18px;
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .badge-count {
+      background: rgba(255, 255, 255, 0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* ========== MODAL ========== */
     .modal {
       display: none;
       position: fixed;
@@ -202,6 +234,7 @@
       z-index: 1000;
       align-items: center;
       justify-content: center;
+      padding: 16px;
     }
 
     .modal.active {
@@ -213,7 +246,7 @@
       border-radius: 10px;
       padding: 24px;
       max-width: 600px;
-      width: 90%;
+      width: 100%;
       max-height: 80vh;
       overflow-y: auto;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
@@ -223,16 +256,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
       border-bottom: 1px solid rgba(22, 45, 73, 0.08);
       padding-bottom: 12px;
     }
 
     .modal-header h3 {
       color: var(--navy);
-      font-size: 16px;
+      font-size: 18px;
       flex: 1;
-      word-break: break-word;
     }
 
     .modal-close {
@@ -254,10 +286,167 @@
       color: var(--navy);
     }
 
-    .modal-body {
-      margin-bottom: 16px;
+    /* MODAL AJOUTER */
+    .modal-add-header {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
+    .btn-mode {
+      flex: 1;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(22, 45, 73, 0.25);
+      background: white;
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-mode.active {
+      background: var(--navy);
+      color: white;
+      border-color: var(--navy);
+    }
+
+    .btn-mode:hover {
+      border-color: var(--blue);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .form-row.full {
+      grid-template-columns: 1fr;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .form-group select,
+    .form-group input,
+    .form-group textarea {
+      border: 1px solid rgba(22, 45, 73, 0.25);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 13.5px;
+      color: var(--navy);
+      font-family: inherit;
+    }
+
+    .form-group select:focus,
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(24, 95, 165, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      left: -9999px;
+    }
+
+    .file-input-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background: #faf9f6;
+      border: 2px dashed rgba(22, 45, 73, 0.25);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .file-input-label:hover {
+      border-color: var(--blue);
+      background: rgba(24, 95, 165, 0.05);
+    }
+
+    .file-input-label.has-file {
+      background: rgba(46, 125, 70, 0.08);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      border-top: 1px solid rgba(22, 45, 73, 0.08);
+      padding-top: 20px;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      background: #f0f0f0;
+      color: var(--navy);
+      border: none;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cancel:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-add {
+      flex: 1;
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-add:hover {
+      background: #22543d;
+      transform: translateY(-1px);
+    }
+
+    /* MODAL INFO */
     .modal-info {
       background: #faf9f6;
       padding: 12px 14px;
@@ -293,37 +482,6 @@
       transform: translateY(-1px);
     }
 
-    .kpis {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .stat {
-      background: #faf9f6;
-      border: 1px solid rgba(22, 45, 73, 0.08);
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-    }
-
-    .stat small {
-      display: block;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      opacity: 0.6;
-      margin-bottom: 4px;
-    }
-
-    .stat b {
-      display: block;
-      font-size: 18px;
-      color: var(--blue);
-      font-weight: 700;
-    }
-
     @media (max-width: 640px) {
       .document-card {
         flex-direction: column;
@@ -336,11 +494,18 @@
       }
 
       header {
-        padding: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
       }
 
-      header h1 {
-        font-size: 20px;
+      .header-btn {
+        width: 100%;
+        text-align: center;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -351,15 +516,18 @@
 
   <!-- HEADER -->
   <header>
-    <h1>📄 LARA</h1>
-    <p>Gestion Documentaire de Chantier</p>
+    <div class="title">
+      <h1>📄 LARA</h1>
+      <p>Gestion Documentaire de Chantier</p>
+    </div>
+    <button class="header-btn" onclick="openAddModal()">➕ Ajouter un Document</button>
   </header>
 
   <!-- INFO BOX -->
   <div class="section">
     <div class="info-box">
       <strong>💡 Comment ça marche :</strong> LARA affiche vos documents (Photos, Plans, PV) dans une liste simple. 
-      Cliquez "👁️ VOIR" pour ouvrir un document stocké chez Google Drive. C'est tout !
+      Cliquez "➕ Ajouter un Document" ou "👁️ VOIR" pour ouvrir un document stocké chez Google Drive.
     </div>
 
     <div class="kpis">
@@ -422,12 +590,111 @@
 
 </div>
 
-<!-- MODAL -->
-<div class="modal" id="modal">
+<!-- MODAL AJOUTER DOCUMENT -->
+<div class="modal" id="modalAdd">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>➕ Ajouter un Document</h3>
+      <button class="modal-close" onclick="closeAddModal()">✕</button>
+    </div>
+
+    <div class="modal-add-header">
+      <button class="btn-mode active" onclick="switchMode('upload')">📁 Uploader un fichier</button>
+      <button class="btn-mode" onclick="switchMode('capture')">📸 Coller une capture</button>
+    </div>
+
+    <!-- MODE UPLOAD -->
+    <div id="uploadMode">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Catégorie</label>
+          <select id="addCategory">
+            <option value="">— Choisir la catégorie —</option>
+            <option value="photo">📸 Photos du Chantier</option>
+            <option value="plan">📐 Plans Techniques</option>
+            <option value="pv">✅ PV de Réception</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row full">
+        <div class="form-group">
+          <label>Fichier</label>
+          <div class="file-input-wrapper">
+            <input type="file" id="addFile" accept="image/*,.pdf,.doc,.docx">
+            <label class="file-input-label" for="addFile" id="fileLabel">
+              📎 Sélectionner un fichier ou le glisser ici
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="addDate">
+        </div>
+      </div>
+
+      <div class="form-row full">
+        <div class="form-group">
+          <label>Description (optionnel)</label>
+          <textarea id="addDescription" placeholder="Façade avant, plan v2, etc."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODE CAPTURE -->
+    <div id="captureMode" style="display: none;">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Catégorie</label>
+          <select id="captureCategory">
+            <option value="">— Choisir la catégorie —</option>
+            <option value="photo">📸 Photos du Chantier</option>
+            <option value="plan">📐 Plans Techniques</option>
+            <option value="pv">✅ PV de Réception</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row full">
+        <div class="form-group">
+          <label>Coller une image (Ctrl+V)</label>
+          <div id="captureArea" style="border: 2px dashed rgba(22, 45, 73, 0.25); border-radius: 6px; padding: 20px; text-align: center; min-height: 120px; display: flex; align-items: center; justify-content: center; color: var(--gray); cursor: pointer;">
+            Collez votre capture d'écran ici
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="captureDate">
+        </div>
+      </div>
+
+      <div class="form-row full">
+        <div class="form-group">
+          <label>Description (optionnel)</label>
+          <textarea id="captureDescription" placeholder="Détails de la capture..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAddModal()">Annuler</button>
+      <button class="btn-add" onclick="addDocument()">✓ Ajouter le Document</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VOIR DOCUMENT -->
+<div class="modal" id="modalView">
   <div class="modal-content">
     <div class="modal-header">
       <h3 id="modalTitle"></h3>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <button class="modal-close" onclick="closeViewModal()">✕</button>
     </div>
     <div class="modal-body">
       <div class="modal-info" id="modalInfo"></div>
@@ -437,21 +704,151 @@
 
 <script>
 // ============================================
-// DONNÉES DE DÉMONSTRATION
+// DONNÉES
 // ============================================
 
 const documents = {
   photo: [
-    { id: 'photo1', nom: 'Facade_Avant.jpg', date: '25/07/2026', url: '#' },
-    { id: 'photo2', nom: 'Facade_Travaux_15_07.jpg', date: '15/07/2026', url: '#' }
+    { id: 'photo1', nom: 'Facade_Avant.jpg', date: '25/07/2026', desc: 'Vue de la façade avant', url: '#' },
+    { id: 'photo2', nom: 'Facade_Travaux_15_07.jpg', date: '15/07/2026', desc: 'Travaux en cours', url: '#' }
   ],
   plan: [
-    { id: 'plan1', nom: 'Plan_Etage_v2.pdf', date: '20/07/2026', url: '#' }
+    { id: 'plan1', nom: 'Plan_Etage_v2.pdf', date: '20/07/2026', desc: 'Plan technique étage 1', url: '#' }
   ],
   pv: [
-    { id: 'pv1', nom: 'PV_Reception_22_07.pdf', date: '22/07/2026', url: '#' }
+    { id: 'pv1', nom: 'PV_Reception_22_07.pdf', date: '22/07/2026', desc: 'Réception finale', url: '#' }
   ]
 };
+
+// ============================================
+// MODAL AJOUTER
+// ============================================
+
+function openAddModal() {
+  document.getElementById('modalAdd').classList.add('active');
+  setTodayDate();
+}
+
+function closeAddModal() {
+  document.getElementById('modalAdd').classList.remove('active');
+  resetForm();
+}
+
+function setTodayDate() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('addDate').value = today;
+  document.getElementById('captureDate').value = today;
+}
+
+function resetForm() {
+  document.getElementById('addCategory').value = '';
+  document.getElementById('addFile').value = '';
+  document.getElementById('addDescription').value = '';
+  document.getElementById('addDate').value = '';
+  document.getElementById('fileLabel').textContent = '📎 Sélectionner un fichier ou le glisser ici';
+  document.getElementById('fileLabel').classList.remove('has-file');
+}
+
+function switchMode(mode) {
+  const upload = document.getElementById('uploadMode');
+  const capture = document.getElementById('captureMode');
+  const buttons = document.querySelectorAll('.btn-mode');
+
+  buttons.forEach(b => b.classList.remove('active'));
+  
+  if (mode === 'upload') {
+    upload.style.display = 'block';
+    capture.style.display = 'none';
+    buttons[0].classList.add('active');
+  } else {
+    upload.style.display = 'none';
+    capture.style.display = 'block';
+    buttons[1].classList.add('active');
+  }
+}
+
+// File input
+document.getElementById('addFile')?.addEventListener('change', function(e) {
+  const label = document.getElementById('fileLabel');
+  if (this.files.length > 0) {
+    label.textContent = `✓ ${this.files[0].name}`;
+    label.classList.add('has-file');
+  } else {
+    label.textContent = '📎 Sélectionner un fichier ou le glisser ici';
+    label.classList.remove('has-file');
+  }
+});
+
+function addDocument() {
+  const category = document.getElementById('addCategory').value || document.getElementById('captureCategory').value;
+  const name = document.getElementById('addFile').files[0]?.name || 'Capture_' + Date.now() + '.jpg';
+  const date = document.getElementById('addDate').value || document.getElementById('captureDate').value;
+  const desc = document.getElementById('addDescription').value || document.getElementById('captureDescription').value;
+
+  if (!category) {
+    alert('Veuillez choisir une catégorie');
+    return;
+  }
+
+  if (!date) {
+    alert('Veuillez choisir une date');
+    return;
+  }
+
+  const newDoc = {
+    id: category + Date.now(),
+    nom: name,
+    date: new Date(date).toLocaleDateString('fr-FR'),
+    desc: desc,
+    url: '#'
+  };
+
+  documents[category].push(newDoc);
+  render();
+  closeAddModal();
+
+  // Scroll vers la catégorie
+  const categoryId = category + 'Container';
+  setTimeout(() => {
+    document.getElementById(categoryId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 100);
+}
+
+// ============================================
+// MODAL VOIR
+// ============================================
+
+function openViewModal() {
+  document.getElementById('modalView').classList.add('active');
+}
+
+function closeViewModal() {
+  document.getElementById('modalView').classList.remove('active');
+}
+
+function viewDocument(category, docId) {
+  const doc = documents[category].find(d => d.id === docId);
+  if (!doc) return;
+
+  const modal = document.getElementById('modalView');
+  const title = document.getElementById('modalTitle');
+  const info = document.getElementById('modalInfo');
+
+  title.textContent = doc.nom;
+
+  info.innerHTML = `
+    <p><strong>Fichier :</strong> ${doc.nom}</p>
+    <p><strong>Catégorie :</strong> ${getCategoryName(category)}</p>
+    <p><strong>Date :</strong> ${doc.date}</p>
+    ${doc.desc ? `<p><strong>Description :</strong> ${doc.desc}</p>` : ''}
+    <p style="margin-top: 8px; color: #777; font-size: 12px;">
+      Ce document est stocké chez Google Drive.
+    </p>
+    <a href="${doc.url}" class="modal-link" target="_blank">📂 Ouvrir dans Google Drive →</a>
+  `;
+
+  openViewModal();
+}
 
 // ============================================
 // AFFICHAGE
@@ -468,7 +865,7 @@ function renderCategory(category) {
   const containerId = category + 'Container';
   const container = document.getElementById(containerId);
   const docs = documents[category];
-  
+
   if (docs.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
@@ -478,7 +875,7 @@ function renderCategory(category) {
     `;
     return;
   }
-  
+
   container.innerHTML = docs.map(doc => `
     <div class="document-card">
       <div class="document-info">
@@ -494,48 +891,25 @@ function updateCounts() {
   document.getElementById('photoCount').textContent = documents.photo.length;
   document.getElementById('planCount').textContent = documents.plan.length;
   document.getElementById('pvCount').textContent = documents.pv.length;
-  
+
   document.getElementById('photoCountBadge').textContent = documents.photo.length;
   document.getElementById('planCountBadge').textContent = documents.plan.length;
   document.getElementById('pvCountBadge').textContent = documents.pv.length;
 }
 
-function viewDocument(category, docId) {
-  const doc = documents[category].find(d => d.id === docId);
-  if (!doc) return;
-  
-  const modal = document.getElementById('modal');
-  const title = document.getElementById('modalTitle');
-  const info = document.getElementById('modalInfo');
-  
-  title.textContent = doc.nom;
-  
-  info.innerHTML = `
-    <p><strong>Fichier :</strong> ${doc.nom}</p>
-    <p><strong>Catégorie :</strong> ${getCategoryName(category)}</p>
-    <p><strong>Date :</strong> ${doc.date}</p>
-    <p style="margin-top: 8px; color: #777; font-size: 12px;">
-      Ce document est stocké chez Google Drive. Cliquez le lien pour l'ouvrir, le télécharger ou le partager.
-    </p>
-    <a href="${doc.url}" class="modal-link" target="_blank">📂 Ouvrir dans Google Drive →</a>
-  `;
-  
-  modal.classList.add('active');
-}
-
-function closeModal() {
-  document.getElementById('modal').classList.remove('active');
-}
-
-// Fermer au clic en dehors
-document.getElementById('modal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
-
 function getCategoryName(category) {
   const names = { photo: 'Photo', plan: 'Plan', pv: 'PV de Réception' };
   return names[category] || 'Document';
 }
+
+// Fermer modal au clic en dehors
+document.getElementById('modalAdd')?.addEventListener('click', function(e) {
+  if (e.target === this) closeAddModal();
+});
+
+document.getElementById('modalView')?.addEventListener('click', function(e) {
+  if (e.target === this) closeViewModal();
+});
 
 // ============================================
 // INITIALISATION
