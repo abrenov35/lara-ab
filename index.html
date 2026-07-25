@@ -209,37 +209,6 @@
       margin-bottom: 8px;
     }
 
-    .kpis {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .stat {
-      background: #faf9f6;
-      border: 1px solid rgba(22, 45, 73, 0.08);
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-    }
-
-    .stat small {
-      display: block;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      opacity: 0.6;
-      margin-bottom: 4px;
-    }
-
-    .stat b {
-      display: block;
-      font-size: 18px;
-      color: var(--blue);
-      font-weight: 700;
-    }
-
     .badge-count {
       background: rgba(255, 255, 255, 0.3);
       padding: 2px 8px;
@@ -572,22 +541,6 @@
       <strong>💡 Comment ça marche :</strong> LARA affiche vos documents (Photos, Plans, PV) dans une liste simple. 
       Cliquez "➕ Ajouter un Document" ou "👁️ VOIR" pour ouvrir un document stocké chez Google Drive.
     </div>
-
-    <div class="kpis">
-      <div class="stat">
-        <small>Photos</small>
-        <b id="photoCount">0</b>
-      </div>
-      <div class="stat">
-        <small>Plans</small>
-        <b id="planCount">0</b>
-      </div>
-      <div class="stat">
-        <small>PV</small>
-        <b id="pvCount">0</b>
-      </div>
-    </div>
-  </div>
 
   <!-- PHOTOS -->
   <div class="section">
@@ -934,10 +887,6 @@ function renderCategory(category) {
 }
 
 function updateCounts() {
-  document.getElementById('photoCount').textContent = documents.photo.length;
-  document.getElementById('planCount').textContent = documents.plan.length;
-  document.getElementById('pvCount').textContent = documents.pv.length;
-
   document.getElementById('photoCountBadge').textContent = documents.photo.length;
   document.getElementById('planCountBadge').textContent = documents.plan.length;
   document.getElementById('pvCountBadge').textContent = documents.pv.length;
