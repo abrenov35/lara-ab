@@ -850,6 +850,12 @@ const documents = {
 };
 
 // ============================================
+// CONFIGURATION UPLOAD
+// ============================================
+
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsYqSMQlaHuLMftgUtryDjZFjh4YU0KFxV-YNiDwpqpMhqVA4kxcd1VZ1DaP8fA_W1Lw/exec";
+
+// ============================================
 // MODAL AJOUTER
 // ============================================
 
@@ -910,7 +916,6 @@ document.getElementById('addFile')?.addEventListener('change', function(e) {
 
 function addDocument() {
   const category = document.getElementById('addCategory').value || document.getElementById('captureCategory').value;
-  const name = document.getElementById('addFile').files[0]?.name || 'Capture_' + Date.now() + '.jpg';
   const date = document.getElementById('addDate').value || document.getElementById('captureDate').value;
   const desc = document.getElementById('addDescription').value || document.getElementById('captureDescription').value;
 
@@ -924,24 +929,81 @@ function addDocument() {
     return;
   }
 
-  const newDoc = {
-    id: category + Date.now(),
-    nom: name,
-    date: new Date(date).toLocaleDateString('fr-FR'),
-    desc: desc,
-    url: '#',
-    preview: name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'placeholder'
+  // Récupérer le fichier
+  const fileInput = document.getElementById('addFile');
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert('Veuillez sélectionner un fichier');
+    return;
+  }
+
+  // Afficher un loader
+  const btnAdd = document.querySelector('.btn-add');
+  const originalText = btnAdd.textContent;
+  btnAdd.textContent = '⏳ Upload...';
+  btnAdd.disabled = true;
+
+  // Lire le fichier et le convertir en Base64
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const fileDataBase64 = e.target.result.split(',')[1];
+    const formattedDate = new Date(date).toLocaleDateString('fr-FR');
+
+    // Envoyer au Web App
+    const params = new URLSearchParams({
+      action: 'upload',
+      category: category,
+      fileName: file.name,
+      date: formattedDate,
+      description: desc,
+      fileData: fileDataBase64
+    });
+
+    fetch(WEB_APP_URL, {
+      method: 'POST',
+      body: params
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Ajouter le document avec l'URL réelle
+        const newDoc = {
+          id: category + Date.now(),
+          nom: file.name,
+          date: formattedDate,
+          desc: desc,
+          url: data.fileUrl || '#',
+          preview: file.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'placeholder'
+        };
+
+        documents[category].push(newDoc);
+        render();
+        closeAddModal();
+
+        // Scroll vers la catégorie
+        const categoryId = category + 'Container';
+        setTimeout(() => {
+          document.getElementById(categoryId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+
+        alert('✅ Document uploadé avec succès !');
+      } else {
+        alert('❌ Erreur: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Erreur:', error);
+      alert('❌ Erreur d\'upload: ' + error.message);
+    })
+    .finally(() => {
+      // Remettre le bouton à la normale
+      btnAdd.textContent = originalText;
+      btnAdd.disabled = false;
+    });
   };
 
-  documents[category].push(newDoc);
-  render();
-  closeAddModal();
-
-  // Scroll vers la catégorie
-  const categoryId = category + 'Container';
-  setTimeout(() => {
-    document.getElementById(categoryId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, 100);
+  reader.readAsDataURL(file);
 }
 
 // ============================================
