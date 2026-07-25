@@ -707,7 +707,10 @@
       <h1>📄 LARA</h1>
       <p>Gestion Documentaire de Chantier</p>
     </div>
-    <button class="header-btn" onclick="openAddModal()">➕ Ajouter un Document</button>
+    <div style="display: flex; gap: 8px;">
+      <button class="header-btn" onclick="openAddModal()">➕ Ajouter un Document</button>
+      <button class="header-btn" onclick="loadDocuments()" style="background: var(--blue);">🔄 Rafraîchir</button>
+    </div>
   </header>
 
   <!-- INFO BOX -->
@@ -1042,6 +1045,11 @@ function addDocument() {
         render();
         closeAddModal();
 
+        // Recharger depuis le Sheets pour synchroniser
+        setTimeout(() => {
+          loadDocuments();
+        }, 1000);
+
         // Scroll vers la catégorie
         const categoryId = category + 'Container';
         setTimeout(() => {
@@ -1304,9 +1312,15 @@ async function loadDocuments() {
       body: params
     });
 
+    if (!response.ok) {
+      console.warn('Sheets non accessible au démarrage - affichage vide');
+      render();
+      return;
+    }
+
     const data = await response.json();
 
-    if (data.success && data.documents) {
+    if (data.success && data.documents && data.documents.length > 0) {
       // Réinitialiser les documents
       documents = {
         photo: [],
@@ -1336,11 +1350,11 @@ async function loadDocuments() {
       });
     }
 
-    // Afficher les documents
+    // Afficher les documents (vide ou rempli)
     render();
   } catch (error) {
-    console.error('Erreur chargement documents:', error);
-    // Si erreur, afficher juste render() avec vide
+    // Silencieusement ignorer l'erreur au démarrage
+    console.log('LARA démarrée (Sheets en chargement...)');
     render();
   }
 }
