@@ -1,4 +1,4 @@
-<!-- LARA v039 -->
+<!-- LARA v040 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -83,7 +83,7 @@
       <li>✅ Données toujours sauvegardées</li>
     </ul>
     <h3 style="margin-top: 20px; color: #185fa5;">Version</h3>
-    <p><strong>LARA v039</strong> - Production Ready</p>
+    <p><strong>LARA v040</strong> - Production Ready</p>
     <button class="btn-cancel" onclick="closeInfo()" style="width: 100%; margin-top: 20px;">Fermer</button>
   </div>
 </div>
@@ -155,6 +155,10 @@ async function load() {
 }
 
 async function upload() {
+  let btn = document.querySelector("button[onclick="openModal()"]");
+  btn.disabled = true;
+  btn.style.opacity = "0.5";
+  btn.style.cursor = "not-allowed";
   let docName = document.getElementById("docName").value;
   let docDesc = document.getElementById("docDesc").value;
   let file = document.getElementById("file").files[0];
@@ -172,13 +176,22 @@ async function upload() {
       let j = await r.json();
       if (j && j.success) {
         msg("✅ Document ajouté!", true);
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
         closeModal();
         setTimeout(load, 500);
       } else {
         msg("❌ Erreur: " + (j?.message || "unknown"), false);
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
       }
     } catch (e) {
       msg("❌ Erreur: " + e.message, false);
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
     }
   };
   reader.readAsDataURL(file);
@@ -213,9 +226,15 @@ async function confirmDelete() {
       setTimeout(load, 500);
     } else {
       msg("❌ Erreur: " + (j?.message || "unknown"), false);
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
     }
   } catch (e) {
     msg("❌ Erreur: " + e.message, false);
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
   }
 }
 let deleteContext = {};
