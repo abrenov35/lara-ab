@@ -126,6 +126,16 @@
 const API = "https://script.google.com/macros/s/AKfycbyfxVPKymgq8LeqKkhLyRaMGhsT4SQbC-GJCntbUvw7-453Z8yqwRiTfjAGEWX0SEyX/exec";
 let docs = [];
 
+function msg(text, success) {
+  let msgEl = document.createElement("div");
+  msgEl.className = "msg " + (success ? "ok" : "err");
+  msgEl.textContent = text;
+  document.body.appendChild(msgEl);
+  setTimeout(() => msgEl.remove(), 3000);
+}
+
+function closeModal() { document.getElementById("modal").classList.remove("active"); document.getElementById("docName").value = ""; document.getElementById("docDesc").value = ""; document.getElementById("file").value = ""; }
+
 function openModal() { document.getElementById("modal").classList.add("active"); }
 function openInfo() { document.getElementById("infoModal").classList.add("active"); }
 function closeInfo() { document.getElementById("infoModal").classList.remove("active"); }
@@ -252,16 +262,6 @@ async function confirmDelete() {
   }
 }
 let deleteContext = {};
-
-function msg(text, success) {
-  let msgEl = document.createElement("div");
-  msgEl.className = "msg " + (success ? "ok" : "err");
-  msgEl.textContent = text;
-  document.body.appendChild(msgEl);
-  setTimeout(() => msgEl.remove(), 3000);
-}
-
-function closeModal() { document.getElementById("modal").classList.remove("active"); document.getElementById("docName").value = ""; document.getElementById("docDesc").value = ""; document.getElementById("file").value = ""; }
 
 function extractIdFromUrl(url) { let match = url.match(/\/d\/([^\/]+)/); return match ? match[1] : ""; } function render() {
   let html = "";
