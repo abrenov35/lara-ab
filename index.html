@@ -1,4 +1,4 @@
-<!-- LARA v021 -->
+<!-- LARA v022 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -42,7 +42,7 @@
 
 <div class="container">
   <header>
-    <div><h1>📋 LARA v021</h1></div>
+    <div><h1>📋 LARA v022</h1></div>
     <button class="btn" onclick="openModal()">+ Ajouter</button>
   </header>
 
@@ -66,7 +66,7 @@
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbw2BXatEY0nzswtXCAUvohGXmFXe2yeleAUej0ps2pyBQwaI-7WFE_VzaB6K0_ADpXl/exec";
+const API = "https://script.google.com/macros/s/AKfycby-fwhUmKDhyLV4KYJCBPw7tKVjn33bRcVKfM4JJ83s3LdWyZFhW0JUsJx7c1bDf7Ft/exec";
 let docs = [];
 
 function openModal() { document.getElementById("modal").classList.add("active"); }
@@ -122,10 +122,22 @@ async function upload() {
 
 async function deleteDoc(id, name) {
   if (!confirm(`Supprimer "${name}" ?`)) return;
-  docs = docs.filter(d => d.id !== id);
-  render();
-  msg("✅ Document supprimé!", true);
-  setTimeout(load, 500);
+  try {
+    let r = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({ action: "delete", id: id })
+    });
+    let j = await r.json();
+    if (j && j.success) {
+      msg("✅ Document supprimé!", true);
+      setTimeout(load, 500);
+    } else {
+      msg("❌ Erreur: " + (j?.message || "unknown"), false);
+    }
+  } catch (e) {
+    msg("❌ Erreur: " + e.message, false);
+  }
 }
 
 function render() {
