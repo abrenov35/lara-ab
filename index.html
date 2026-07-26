@@ -159,7 +159,12 @@ async function upload() {
 async function deleteDoc(url, name) {
   let fileId = url.match("/d/([^/]+)")[1];
   if (!fileId) { msg("❌ ID introuvable", false); return; }
-  if (!confirm(`Supprimer "${name}" ?`)) return;
+  deleteContext = { url, name, fileId };
+  document.getElementById("deleteConfirmTitle").textContent = `Supprimer "${name}" ?`;
+  document.getElementById("deleteModal").classList.add("active");
+}
+async function confirmDelete() {
+  let { url, name, fileId } = deleteContext;
   try {
     let r = await fetch(API, {
       method: "POST",
@@ -169,6 +174,7 @@ async function deleteDoc(url, name) {
     let j = await r.json();
     if (j && j.success) {
       msg("✅ Document supprimé!", true);
+      closeDeleteModal();
       setTimeout(load, 500);
     } else {
       msg("❌ Erreur: " + (j?.message || "unknown"), false);
@@ -177,6 +183,7 @@ async function deleteDoc(url, name) {
     msg("❌ Erreur: " + e.message, false);
   }
 }
+let deleteContext = {};
 
 function extractIdFromUrl(url) { let match = url.match("/d/([^/]+)"); return match ? match[1] : ""; } function render() {
   let html = "";
