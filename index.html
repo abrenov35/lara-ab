@@ -36,6 +36,19 @@
     .msg.ok { background: #2e7d46; }
     .msg.err { background: #b3352c; }
     @keyframes slide { from { transform: translateX(400px); } to { transform: translateX(0); } }
+    .preview-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
+    .preview-modal.active { display: flex; }
+    .preview-box { background: white; border-radius: 12px; width: 90%; max-width: 800px; height: 85vh; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+    .preview-header { background: #0d3a66; color: white; padding: 20px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center; }
+    .preview-header h3 { font-size: 18px; margin: 0; }
+    .preview-body { flex: 1; overflow: auto; padding: 0; }
+    .preview-body iframe { width: 100%; height: 100%; border: none; }
+    .preview-footer { background: #f5f5f5; padding: 15px 20px; border-radius: 0 0 12px 12px; display: flex; justify-content: flex-end; gap: 10px; }
+    .preview-footer button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
+    .btn-preview-open { background: #FF8C42; color: white; text-decoration: none; }
+    .btn-preview-open:hover { background: #E67E2F; }
+    .btn-preview-close { background: #999; color: white; }
+    .btn-preview-close:hover { background: #777; }
   </style>
 </head>
 <body>
@@ -295,7 +308,7 @@ function extractIdFromUrl(url) { let match = url.match(/\/d\/([^\/]+)/); return 
           <div class="doc-meta">${meta.join(" | ")}</div>
         </div>
         <div class="doc-actions">
-          <button style="padding: 6px 14px; border-radius: 20px; background: #FFF4E6; color: #FF8C42; border: 1px solid #FFD699; cursor: pointer; font-size: 13px; border-radius: 20px;" data-id="${d.id}" onclick="openEditModifier(this)">✏️ Modifier</button> <a href="${d.url}" target="_blank" style="padding: 6px 14px; border-radius: 20px; background: #E8F4F8; color: #185fa5; text-decoration: none; font-size: 13px; border: 1px solid #B3E0FF; cursor: pointer;">👁️ Voir</a>
+          <button style="padding: 6px 14px; border-radius: 20px; background: #FFF4E6; color: #FF8C42; border: 1px solid #FFD699; cursor: pointer; font-size: 13px; border-radius: 20px;" data-id="${d.id}" onclick="openEditModifier(this)">✏️ Modifier</button> <button onclick="openDocumentPreview('${d.url}', '${d.filename}')" style="padding: 6px 14px; border-radius: 20px; background: #E8F4F8; color: #185fa5; border: 1px solid #B3E0FF; cursor: pointer; font-size: 13px; font-weight: 600;">👁️ Voir</button>
           <button style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 0;" onclick="deleteDoc('${d.url}', '${d.name.replace(/'/g, "\\'")}')">🗑️</button>
         </div>
       </div>`;
@@ -306,7 +319,48 @@ function extractIdFromUrl(url) { let match = url.match(/\/d\/([^\/]+)/); return 
 
 load();
 setInterval(load, 5000);
+
+// Modal de prévisualisation
+function openDocumentPreview(url, filename) {
+  document.getElementById("previewIframe").src = url.replace("/view", "/preview");
+  document.getElementById("previewFilename").textContent = filename || "Document";
+  document.getElementById("previewOpenBtn").href = url;
+  document.getElementById("previewModal").classList.add("active");
+}
+
+function closeDocumentPreview() {
+  document.getElementById("previewModal").classList.remove("active");
+  document.getElementById("previewIframe").src = "";
+}
+
+// Fermer le modal au clic sur le fond
+document.addEventListener("click", function(e) {
+  let modal = document.getElementById("previewModal");
+  if (e.target === modal) closeDocumentPreview();
+});
+
+// Échap pour fermer
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") closeDocumentPreview();
+});
 </script>
+
+<!-- Modal Prévisualisation Document -->
+<div class="preview-modal" id="previewModal">
+  <div class="preview-box">
+    <div class="preview-header">
+      <h3>📄 <span id="previewFilename">Document</span></h3>
+      <button onclick="closeDocumentPreview()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0;">×</button>
+    </div>
+    <div class="preview-body">
+      <iframe id="previewIframe" allow="autoplay"></iframe>
+    </div>
+    <div class="preview-footer">
+      <button class="btn-preview-close" onclick="closeDocumentPreview()">Fermer</button>
+      <a id="previewOpenBtn" href="#" target="_blank" class="btn-preview-open">Ouvrir dans Drive</a>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
