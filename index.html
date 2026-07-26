@@ -1,4 +1,4 @@
-<!-- LARA v029 -->
+<!-- LARA v030 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -42,7 +42,7 @@
 
 <div class="container">
   <header>
-    <div><h1>📋 LARA v029</h1><p style="font-size: 12px; margin-top: 5px; opacity: 0.8;">Gestion Documentaire de Chantier</p></div>
+    <div><h1>📋 LARA v030</h1><p style="font-size: 12px; margin-top: 5px; opacity: 0.8;">Gestion Documentaire de Chantier</p></div>
     <button class="btn" onclick="openModal()">+ Ajouter</button>
     <button class="btn" onclick="openInfo()" style="background: #666;">ℹ️ Info</button>
   </header>
@@ -83,7 +83,7 @@
       <li>✅ Données toujours sauvegardées</li>
     </ul>
     <h3 style="margin-top: 20px; color: #185fa5;">Version</h3>
-    <p><strong>LARA v029</strong> - Production Ready</p>
+    <p><strong>LARA v030</strong> - Production Ready</p>
     <button class="btn-cancel" onclick="closeInfo()" style="width: 100%; margin-top: 20px;">Fermer</button>
   </div>
 </div>
@@ -104,6 +104,8 @@ const API = "https://script.google.com/macros/s/AKfycbzX8ilSVro9o-4hTvbLMR87nL2v
 let docs = [];
 
 function openModal() { document.getElementById("modal").classList.add("active"); }
+function openInfo() { document.getElementById("infoModal").classList.add("active"); }
+function closeInfo() { document.getElementById("infoModal").classList.remove("active"); }
 function closeModal() { document.getElementById("modal").classList.remove("active"); document.getElementById("file").value = ""; document.getElementById("docName").value = ""; document.getElementById("docDesc").value = ""; }
 function msg(text, ok) {
   let m = document.createElement("div");
