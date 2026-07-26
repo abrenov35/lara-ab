@@ -1,4 +1,4 @@
-<!-- LARA v020 -->
+<!-- LARA v021 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -42,7 +42,7 @@
 
 <div class="container">
   <header>
-    <div><h1>📋 LARA v020</h1></div>
+    <div><h1>📋 LARA v021</h1></div>
     <button class="btn" onclick="openModal()">+ Ajouter</button>
   </header>
 
@@ -134,7 +134,7 @@ function render() {
     html = '<div class="empty">Aucun document</div>';
   } else {
     docs.forEach(d => {
-      function formatDate(dateStr) { if (!dateStr) return ""; let [y, m, d] = dateStr.split("-"); return `${d}/${m}/${y.slice(-2)}`; } let meta = [];
+      function formatDate(dateStr) { if (!dateStr) return ""; let [y, m, d] = dateStr.split("-"); return `${d}/${m}/${y}`; } let meta = [];
       if (d.filename) meta.push(`📁 ${d.filename}`);
       if (d.date) meta.push(`📅 ${formatDate(d.date)}`);
       if (d.desc) meta.push(`📝 ${d.desc}`);
