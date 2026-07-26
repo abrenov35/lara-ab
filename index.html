@@ -1,4 +1,4 @@
-<!-- LARA v017 -->
+<!-- LARA v018 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -42,7 +42,7 @@
 
 <div class="container">
   <header>
-    <div><h1>📋 LARA v017</h1></div>
+    <div><h1>📋 LARA v018</h1></div>
     <button class="btn" onclick="openModal()">+ Ajouter</button>
   </header>
 
@@ -146,6 +146,7 @@ function render() {
       html += `<div class="doc-item">
         <div class="doc-info">
           <div class="doc-name">${d.name}</div>
+          <div style="font-size: 11px; color: #999; margin-top: 3px;">📁 ${d.id}</div>
           <div class="doc-meta">${d.date || ""} ${d.desc ? "- " + d.desc : ""}</div>
         </div>
         <div class="doc-actions">
