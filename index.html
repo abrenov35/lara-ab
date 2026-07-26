@@ -253,6 +253,16 @@ async function confirmDelete() {
 }
 let deleteContext = {};
 
+function msg(text, success) {
+  let msgEl = document.createElement("div");
+  msgEl.className = "msg " + (success ? "ok" : "err");
+  msgEl.textContent = text;
+  document.body.appendChild(msgEl);
+  setTimeout(() => msgEl.remove(), 3000);
+}
+
+function closeModal() { document.getElementById("modal").classList.remove("active"); document.getElementById("docName").value = ""; document.getElementById("docDesc").value = ""; document.getElementById("file").value = ""; }
+
 function extractIdFromUrl(url) { let match = url.match(/\/d\/([^\/]+)/); return match ? match[1] : ""; } function render() {
   let html = "";
   if (docs.length === 0) {
