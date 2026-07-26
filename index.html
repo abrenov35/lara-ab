@@ -70,7 +70,9 @@ const API = "https://script.google.com/macros/s/AKfycbw2BXatEY0nzswtXCAUvohGXmFX
 let docs = [];
 
 function openModal() { document.getElementById("modal").classList.add("active"); }
-function closeModal() { document.getElementById("modal").classList.remove("active"); document.getElementById("file").value = ""; }
+function closeModal() { document.getElementById("modal").classList.remove("active"); document.getElementById("file").value = "";
+    document.getElementById("docName").value = "";
+    document.getElementById("docDesc").value = ""; }
 function msg(text, ok) {
   let m = document.createElement("div");
   m.className = "msg " + (ok ? "ok" : "err");
@@ -91,6 +93,8 @@ async function load() {
 }
 
 async function upload() {
+  let docName = document.getElementById("docName").value;
+  let docDesc = document.getElementById("docDesc").value;
   let file = document.getElementById("file").files[0];
   if (!file) { msg("Sélectionne un fichier", false); return; }
   
@@ -101,7 +105,7 @@ async function upload() {
       let r = await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ cat: "document", name: file.name, date: new Date().toISOString().split("T")[0], desc: "", file: data })
+        body: JSON.stringify({ cat: "document", name: docName || file.name, date: new Date().toISOString().split("T")[0], desc: docDesc || "", file: data })
       });
       let j = await r.json();
       if (j && j.success) {
