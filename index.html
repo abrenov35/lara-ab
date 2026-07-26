@@ -1,21 +1,27 @@
-<!-- LARA v009 -->
+<!-- LARA v010 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LARA - Test</title>
+  <title>LARA</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial; background: #f5f5f5; padding: 20px; }
     .container { max-width: 900px; margin: 0 auto; }
-    header { background: #0d3a66; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    header { background: #0d3a66; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
     header h1 { font-size: 28px; }
     .btn { background: #185fa5; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .btn:hover { background: #0d3a66; }
+    .documents { background: white; border-radius: 8px; padding: 20px; }
+    .doc-item { border: 1px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 6px; }
+    .doc-name { font-weight: bold; font-size: 16px; }
+    .doc-meta { font-size: 12px; color: #666; margin-top: 5px; }
+    .empty { text-align: center; color: #999; padding: 40px; }
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
     .modal.active { display: flex; }
     .modal-box { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 400px; }
+    .modal-box input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
     .modal-box button { width: 100%; padding: 10px; margin: 8px 0; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
     .btn-submit { background: #2e7d46; color: white; }
     .btn-cancel { background: #999; color: white; }
@@ -29,14 +35,21 @@
 
 <div class="container">
   <header>
-    <h1>📋 LARA - TEST</h1>
+    <div><h1>📋 LARA</h1></div>
+    <button class="btn" onclick="openModal()">+ Ajouter</button>
   </header>
-  <button class="btn" onclick="openModal()">+ Test Upload</button>
+
+  <div class="documents">
+    <h2 style="margin-bottom: 15px;">Documents</h2>
+    <div id="docsList">
+      <div class="empty">Chargement...</div>
+    </div>
+  </div>
 </div>
 
 <div class="modal" id="modal">
   <div class="modal-box">
-    <h2>Upload File</h2>
+    <h2>+ Ajouter un Document</h2>
     <input type="file" id="file" required>
     <button class="btn-submit" onclick="upload()">Ajouter</button>
     <button class="btn-cancel" onclick="closeModal()">Annuler</button>
@@ -45,11 +58,11 @@
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxsJtSdiEuqkXwur9WKfFUhEcEgF8iIb91MkIFGcDBmvOp_lW0BKIiQKU85pQ2SoSAP/exec";
+let docs = [];
 
 function openModal() { document.getElementById("modal").classList.add("active"); }
-function closeModal() { document.getElementById("modal").classList.remove("active"); }
+function closeModal() { document.getElementById("modal").classList.remove("active"); document.getElementById("file").value = ""; }
 function msg(text, ok) {
-  console.log("MSG:", text, ok);
   let m = document.createElement("div");
   m.className = "msg " + (ok ? "ok" : "err");
   m.textContent = text;
@@ -57,41 +70,59 @@ function msg(text, ok) {
   setTimeout(() => m.remove(), 3000);
 }
 
+async function load() {
+  try {
+    let r = await fetch(API);
+    let j = await r.json();
+    if (j && j.ok && j.data) {
+      docs = j.data;
+      render();
+    }
+  } catch (e) { console.error(e); }
+}
+
 async function upload() {
   let file = document.getElementById("file").files[0];
-  console.log("Upload file:", file?.name);
   if (!file) { msg("Sélectionne un fichier", false); return; }
   
   let reader = new FileReader();
   reader.onload = async (e) => {
     let data = e.target.result.split(",")[1];
     try {
-      let payload = { action: "upload", cat: "photo", name: file.name, date: "2026-07-26", desc: "test", file: data };
-      console.log("Sending...");
       let r = await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ cat: "photo", name: file.name, date: new Date().toISOString().split("T")[0], desc: "upload", file: data })
       });
-      console.log("Status:", r.status);
-      let text = await r.text();
-      console.log("Response:", text);
-      let j = JSON.parse(text);
+      let j = await r.json();
       if (j && j.success) {
-        msg("✅ OK!", true);
+        msg("✅ Document ajouté!", true);
         closeModal();
+        setTimeout(load, 500);
       } else {
-        msg("❌ " + (j?.msg || "Erreur"), false);
+        msg("❌ Erreur: " + (j?.message || "unknown"), false);
       }
     } catch (e) {
-      console.error("Error:", e);
-      msg("❌ " + e.message, false);
+      msg("❌ Erreur: " + e.message, false);
     }
   };
   reader.readAsDataURL(file);
 }
 
-console.log("LARA Test loaded");
+function render() {
+  let html = "";
+  if (docs.length === 0) {
+    html = '<div class="empty">Aucun document</div>';
+  } else {
+    docs.forEach(d => {
+      html += `<div class="doc-item"><div class="doc-name">${d.name}</div><div class="doc-meta">${d.date || ""} - ${d.desc || ""}</div></div>`;
+    });
+  }
+  document.getElementById("docsList").innerHTML = html;
+}
+
+load();
+setInterval(load, 5000);
 </script>
 
 </body>
