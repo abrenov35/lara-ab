@@ -1,4 +1,4 @@
-<!-- LARA v016 -->
+<!-- LARA v017 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -42,7 +42,7 @@
 
 <div class="container">
   <header>
-    <div><h1>📋 LARA v016</h1></div>
+    <div><h1>📋 LARA v017</h1></div>
     <button class="btn" onclick="openModal()">+ Ajouter</button>
   </header>
 
@@ -57,6 +57,8 @@
 <div class="modal" id="modal">
   <div class="modal-box">
     <h2>+ Ajouter un Document</h2>
+    <input type="text" id="docName" placeholder="Nom du document" required>
+    <input type="text" id="docDesc" placeholder="Description (optionnel)">
     <input type="file" id="file" required>
     <button class="btn-submit" onclick="upload()">Ajouter</button>
     <button class="btn-cancel" onclick="closeModal()">Annuler</button>
