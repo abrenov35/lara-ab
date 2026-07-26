@@ -62,6 +62,7 @@ let docs = [];
 function openModal() { document.getElementById("modal").classList.add("active"); }
 function closeModal() { document.getElementById("modal").classList.remove("active"); }
 function msg(text, ok) {
+  console.log("MSG:", text, ok);
   let m = document.createElement("div");
   m.className = "msg " + (ok ? "ok" : "err");
   m.textContent = text;
@@ -71,13 +72,16 @@ function msg(text, ok) {
 
 async function load() {
   try {
+    console.log("Loading from:", API);
     let r = await fetch(API);
+    console.log("Response status:", r.status);
     let j = await r.json();
-    if (j.ok && j.data) {
+    console.log("Response JSON:", j);
+    if (j && j.ok && j.data) {
       docs = j.data;
       render();
     }
-  } catch (e) { console.error(e); }
+  } catch (e) { console.error("Load error:", e); }
 }
 
 async function upload() {
@@ -85,27 +89,36 @@ async function upload() {
   let file = document.getElementById("file").files[0];
   let desc = document.getElementById("desc").value;
   
+  console.log("Upload:", {date, file: file?.name, desc});
+  
   if (!date || !file) { msg("Remplissez les champs", false); return; }
   
   let reader = new FileReader();
   reader.onload = async (e) => {
     let data = e.target.result.split(",")[1];
     try {
+      let payload = { cat: "photo", name: file.name, date, desc, file: data };
+      console.log("Sending payload...");
       let r = await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ cat: "photo", name: file.name, date, desc, file: data })
+        body: JSON.stringify(payload)
       });
-      let j = await r.json();
-      if (j.ok) {
+      console.log("Response status:", r.status);
+      let text = await r.text();
+      console.log("Response text:", text);
+      let j = JSON.parse(text);
+      console.log("Response JSON:", j);
+      if (j && j.ok) {
         msg("✅ Document ajouté", true);
         closeModal();
         setTimeout(load, 500);
       } else {
-        msg("❌ " + j.msg, false);
+        msg("❌ " + (j?.msg || "Erreur"), false);
       }
     } catch (e) {
-      msg("❌ Erreur: " + e, false);
+      console.error("Upload error:", e);
+      msg("❌ Erreur: " + e.message, false);
     }
   };
   reader.readAsDataURL(file);
@@ -124,6 +137,7 @@ function render() {
 }
 
 document.getElementById("date").valueAsDate = new Date();
+console.log("LARA loaded. API:", API);
 load();
 </script>
 
