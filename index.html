@@ -1,4 +1,4 @@
-<!-- LARA v027 -->
+<!-- LARA v028 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -42,7 +42,7 @@
 
 <div class="container">
   <header>
-    <div><h1>📋 LARA v027</h1></div>
+    <div><h1>📋 LARA v028</h1></div>
     <button class="btn" onclick="openModal()">+ Ajouter</button>
   </header>
 
@@ -152,7 +152,6 @@ function extractIdFromUrl(url) { let match = url.match("/d/([^/]+)"); return mat
       if (d.filename) meta.push(`📁 ${d.filename}`);
       
       if (d.desc) meta.push(`📝 ${d.desc}`);
-      if (d.date) meta.push(`📅 ${formatDate(d.date)}`);
       
       html += `<div class="doc-item">
         <div class="doc-info">
