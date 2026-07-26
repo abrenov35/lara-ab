@@ -89,6 +89,17 @@
 </div>
 
 <!-- Delete Confirmation Modal -->
+<!-- Edit Modal -->
+<div class="modal" id="editModal">
+  <div class="modal-box">
+    <h2>✏️ Modifier le document</h2>
+    <input type="text" id="editName" placeholder="Nom du document" required>
+    <input type="text" id="editDesc" placeholder="Description">
+    <button class="btn-submit" onclick="saveEdit()">Enregistrer</button>
+    <button class="btn-cancel" onclick="closeEditModal()">Annuler</button>
+  </div>
+</div>
+
 <div class="modal" id="deleteModal">
   <div class="modal-box" style="text-align: center; max-width: 350px;">
     <h2 id="deleteConfirmTitle" style="color: #b3352c; margin-bottom: 20px;">Supprimer ce document?</h2>
