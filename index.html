@@ -145,9 +145,14 @@ function openEditModifier(btn) { let row = btn.closest(".doc-item"); let id = bt
 function openEditModal(id, name, desc) { editContext = { id, name, desc }; document.getElementById("editName").value = name; document.getElementById("editDesc").value = desc; document.getElementById("editModal").classList.add("active"); }
 function closeEditModal() { document.getElementById("editModal").classList.remove("active"); }
 async function saveEdit() {
+  let btn = document.querySelector('button[onclick="saveEdit()"]') || event.target;
+  btn.disabled = true;
+  btn.style.opacity = "0.5";
+  btn.style.cursor = "not-allowed";
+  
   let name = document.getElementById("editName").value;
   let desc = document.getElementById("editDesc").value;
-  if (!name) { msg("❌ Remplis le nom", false); return; }
+  if (!name) { msg("❌ Remplis le nom", false); btn.disabled = false; btn.style.opacity = "1"; btn.style.cursor = "pointer"; return; }
   try {
     let r = await fetch(API, {
       method: "POST",
@@ -158,12 +163,21 @@ async function saveEdit() {
     if (j && j.success) {
       msg("✅ Modifié!", true);
       closeEditModal();
+      btn.disabled = false;
+      btn.style.opacity = "1";
+      btn.style.cursor = "pointer";
       setTimeout(load, 500);
     } else {
       msg("❌ Erreur: " + (j?.message || "unknown"), false);
+      btn.disabled = false;
+      btn.style.opacity = "1";
+      btn.style.cursor = "pointer";
     }
   } catch (e) {
     msg("❌ Erreur: " + e.message, false);
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.style.cursor = "pointer";
   }
 }
 
