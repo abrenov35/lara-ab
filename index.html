@@ -193,14 +193,14 @@ async function load() {
 }
 
 async function upload() {
-  let btn = document.querySelector('button[onclick="openModal()"]');
+  let btn = event.target;
   btn.disabled = true;
   btn.style.opacity = "0.5";
   btn.style.cursor = "not-allowed";
   let docName = document.getElementById("docName").value;
   let docDesc = document.getElementById("docDesc").value;
   let file = document.getElementById("file").files[0];
-  if (!docName || !file) { msg("Remplis tous les champs requis", false); return; }
+  if (!docName || !file) { msg("Remplis tous les champs requis", false); btn.disabled = false; btn.style.opacity = "1"; btn.style.cursor = "pointer"; return; }
   
   let reader = new FileReader();
   reader.onload = async (e) => {
