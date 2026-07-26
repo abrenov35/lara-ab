@@ -1,4 +1,4 @@
-<!-- LARA v018 -->
+<!-- LARA v019 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -42,7 +42,7 @@
 
 <div class="container">
   <header>
-    <div><h1>📋 LARA v018</h1></div>
+    <div><h1>📋 LARA v019</h1></div>
     <button class="btn" onclick="openModal()">+ Ajouter</button>
   </header>
 
@@ -70,9 +70,7 @@ const API = "https://script.google.com/macros/s/AKfycbw2BXatEY0nzswtXCAUvohGXmFX
 let docs = [];
 
 function openModal() { document.getElementById("modal").classList.add("active"); }
-function closeModal() { document.getElementById("modal").classList.remove("active"); document.getElementById("file").value = "";
-    document.getElementById("docName").value = "";
-    document.getElementById("docDesc").value = ""; }
+function closeModal() { document.getElementById("modal").classList.remove("active"); document.getElementById("file").value = ""; document.getElementById("docName").value = ""; document.getElementById("docDesc").value = ""; }
 function msg(text, ok) {
   let m = document.createElement("div");
   m.className = "msg " + (ok ? "ok" : "err");
@@ -96,7 +94,7 @@ async function upload() {
   let docName = document.getElementById("docName").value;
   let docDesc = document.getElementById("docDesc").value;
   let file = document.getElementById("file").files[0];
-  if (!file) { msg("Sélectionne un fichier", false); return; }
+  if (!docName || !file) { msg("Remplis tous les champs requis", false); return; }
   
   let reader = new FileReader();
   reader.onload = async (e) => {
@@ -105,7 +103,7 @@ async function upload() {
       let r = await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ cat: "document", name: docName || file.name, date: new Date().toISOString().split("T")[0], desc: docDesc || "", file: data })
+        body: JSON.stringify({ cat: "document", name: docName, filename: file.name, date: new Date().toISOString().split("T")[0], desc: docDesc || "", file: data })
       });
       let j = await r.json();
       if (j && j.success) {
@@ -124,17 +122,10 @@ async function upload() {
 
 async function deleteDoc(id, name) {
   if (!confirm(`Supprimer "${name}" ?`)) return;
-  
-  try {
-    // Note: Delete functionality requires backend support
-    // For now, we just remove from the list locally
-    docs = docs.filter(d => d.id !== id);
-    render();
-    msg("✅ Document supprimé!", true);
-    setTimeout(load, 500);
-  } catch (e) {
-    msg("❌ Erreur: " + e.message, false);
-  }
+  docs = docs.filter(d => d.id !== id);
+  render();
+  msg("✅ Document supprimé!", true);
+  setTimeout(load, 500);
 }
 
 function render() {
@@ -143,11 +134,15 @@ function render() {
     html = '<div class="empty">Aucun document</div>';
   } else {
     docs.forEach(d => {
+      let meta = [];
+      if (d.filename) meta.push(`📁 ${d.filename}`);
+      if (d.date) meta.push(`📅 ${d.date}`);
+      if (d.desc) meta.push(`📝 ${d.desc}`);
+      
       html += `<div class="doc-item">
         <div class="doc-info">
           <div class="doc-name">${d.name}</div>
-          <div style="font-size: 11px; color: #999; margin-top: 3px;">📁 ${d.id}</div>
-          <div class="doc-meta">${d.date || ""} ${d.desc ? "- " + d.desc : ""}</div>
+          <div class="doc-meta">${meta.join(" | ")}</div>
         </div>
         <div class="doc-actions">
           <a href="${d.url}" target="_blank" class="btn-view">👁️ Voir</a>
