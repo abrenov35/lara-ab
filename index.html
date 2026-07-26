@@ -1,4 +1,4 @@
-<!-- LARA v035 -->
+<!-- LARA v036 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -42,7 +42,7 @@
 
 <div class="container">
   <header>
-    <div><h1>📋 LARA v035</h1><p style="font-size: 12px; margin-top: 5px; opacity: 0.8;">Gestion Documentaire de Chantier</p></div>
+    <div><h1>📋 LARA v036</h1><p style="font-size: 12px; margin-top: 5px; opacity: 0.8;">Gestion Documentaire de Chantier</p></div>
     <button class="btn" onclick="openModal()">+ Ajouter un document</button>
     <button class="btn" onclick="openInfo()" style="background: #185fa5; margin-left: 10px;">ℹ️ Info</button>
   </header>
@@ -83,7 +83,7 @@
       <li>✅ Données toujours sauvegardées</li>
     </ul>
     <h3 style="margin-top: 20px; color: #185fa5;">Version</h3>
-    <p><strong>LARA v035</strong> - Production Ready</p>
+    <p><strong>LARA v036</strong> - Production Ready</p>
     <button class="btn-cancel" onclick="closeInfo()" style="width: 100%; margin-top: 20px;">Fermer</button>
   </div>
 </div>
@@ -177,6 +177,10 @@ async function deleteDoc(url, name) {
   document.getElementById("deleteModal").classList.add("active");
 }
 async function confirmDelete() {
+  let btn = event.target;
+  btn.disabled = true;
+  btn.style.opacity = "0.5";
+  btn.style.cursor = "not-allowed";
   let { url, name, fileId } = deleteContext;
   try {
     let r = await fetch(API, {
@@ -188,6 +192,9 @@ async function confirmDelete() {
     if (j && j.success) {
       msg("✅ Document supprimé!", true);
       closeDeleteModal();
+      btn.disabled = false;
+      btn.style.opacity = "1";
+      btn.style.cursor = "pointer";
       setTimeout(load, 500);
     } else {
       msg("❌ Erreur: " + (j?.message || "unknown"), false);
