@@ -42,7 +42,7 @@
 
 <div class="container">
   <header>
-    <div><h1>📋 LARA <span style="font-size: 12px; opacity: 0.6;">v039</span></h1><p style="font-size: 12px; margin-top: 5px; opacity: 0.8;">Gestion Documentaire de Chantier</p></div>
+    <div><h1>📋 LARA <span style="font-size: 12px; opacity: 0.6;">v044</span></h1><p style="font-size: 12px; margin-top: 5px; opacity: 0.8;">Gestion Documentaire de Chantier</p></div>
     <button class="btn" onclick="openModal()">+ Ajouter un document</button>
     <button class="btn" onclick="openInfo()" style="background: #185fa5; margin-left: 10px;">ℹ️ Info</button>
   </header>
@@ -169,7 +169,7 @@ async function load() {
 }
 
 async function upload() {
-  let btn = document.querySelector("button[onclick="openModal()"]");
+  let btn = document.querySelector('button[onclick="openModal()"]');
   btn.disabled = true;
   btn.style.opacity = "0.5";
   btn.style.cursor = "not-allowed";
@@ -212,7 +212,7 @@ async function upload() {
 }
 
 async function deleteDoc(url, name) {
-  let fileId = url.match("/d/([^/]+)")[1];
+  let fileId = url.match(/\/d\/([^\/]+)/)[1];
   if (!fileId) { msg("❌ ID introuvable", false); return; }
   deleteContext = { url, name, fileId };
   document.getElementById("deleteConfirmTitle").textContent = `Supprimer "${name}" ?`;
@@ -253,7 +253,7 @@ async function confirmDelete() {
 }
 let deleteContext = {};
 
-function extractIdFromUrl(url) { let match = url.match("/d/([^/]+)"); return match ? match[1] : ""; } function render() {
+function extractIdFromUrl(url) { let match = url.match(/\/d\/([^\/]+)/); return match ? match[1] : ""; } function render() {
   let html = "";
   if (docs.length === 0) {
     html = '<div class="empty">Aucun document</div>';
