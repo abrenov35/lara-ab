@@ -88,6 +88,18 @@
   </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
+<div class="modal" id="deleteModal">
+  <div class="modal-box" style="text-align: center; max-width: 350px;">
+    <h2 id="deleteConfirmTitle" style="color: #b3352c; margin-bottom: 20px;">Supprimer ce document?</h2>
+    <p style="color: #666; margin-bottom: 30px;">Cette action ne peut pas être annulée.</p>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn-cancel" onclick="closeDeleteModal()" style="flex: 1;">Annuler</button>
+      <button style="flex: 1; background: #b3352c; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold;" onclick="confirmDelete()">Supprimer</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="modal">
   <div class="modal-box">
     <h2>+ Ajouter un Document</h2>
