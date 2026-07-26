@@ -284,6 +284,7 @@ function extractIdFromUrl(url) { let match = url.match(/\/d\/([^\/]+)/); return 
   } else {
     docs.forEach(d => {
       function formatDate(dateStr) { if (!dateStr) return ""; let [y, m, d] = dateStr.split("-"); return `${d}/${m}/${y}`; } let meta = [];
+      if (d.date) meta.push(`📅 ${formatDate(d.date)}`);
       if (d.filename) meta.push(`📁 ${d.filename}`);
       
       if (d.desc) meta.push(`📝 ${d.desc}`);
