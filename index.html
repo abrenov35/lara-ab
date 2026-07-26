@@ -65,7 +65,7 @@ async function upload() {
   reader.onload = async (e) => {
     let data = e.target.result.split(",")[1];
     try {
-      let payload = { cat: "photo", name: file.name, date: "2026-07-26", desc: "test", file: data };
+      let payload = { action: "upload", cat: "photo", name: file.name, date: "2026-07-26", desc: "test", file: data };
       console.log("Sending...");
       let r = await fetch(API, {
         method: "POST",
