@@ -283,7 +283,7 @@ function extractIdFromUrl(url) { let match = url.match(/\/d\/([^\/]+)/); return 
     html = '<div class="empty">Aucun document</div>';
   } else {
     docs.forEach(d => {
-      function formatDate(dateStr) { if (!dateStr) return ""; let [y, m, d] = dateStr.split("-"); return `${d}/${m}/${y}`; } let meta = [];
+      function formatDate(dateStr) { if (!dateStr) return ""; let dateOnly = dateStr.split("T")[0]; let [y, m, d] = dateOnly.split("-"); return `${d}/${m}/${y}`; } let meta = [];
       if (d.date) meta.push(`📅 ${formatDate(d.date)}`);
       if (d.filename) meta.push(`📁 ${d.filename}`);
       
