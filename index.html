@@ -785,12 +785,6 @@
       <div class="form-row">
         <div class="form-group">
           <label>Catégorie</label>
-          <select id="addCategory">
-            <option value="">— Choisir la catégorie —</option>
-            <option value="photo">📸 Photos du Chantier</option>
-            <option value="plan">📐 Plans Techniques</option>
-            <option value="pv">✅ Documents</option>
-          </select>
         </div>
       </div>
 
@@ -816,12 +810,6 @@
       <div class="form-row">
         <div class="form-group">
           <label>Catégorie</label>
-          <select id="captureCategory">
-            <option value="">— Choisir la catégorie —</option>
-            <option value="photo">📸 Photos du Chantier</option>
-            <option value="plan">📐 Plans Techniques</option>
-            <option value="pv">✅ Documents</option>
-          </select>
         </div>
       </div>
 
@@ -979,7 +967,7 @@ document.getElementById('addFile')?.addEventListener('change', function(e) {
 });
 
 function addDocument() {
-  const category = document.getElementById('addCategory').value || document.getElementById('captureCategory').value;
+  const category = "photo";
   const date = document.getElementById('addDate').value || document.getElementById('captureDate').value;
   const desc = document.getElementById('addDescription').value || document.getElementById('captureDescription').value;
 
