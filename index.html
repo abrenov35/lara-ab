@@ -416,6 +416,15 @@
     <label style="display: block; margin-bottom: 3px; margin-top: 10px; font-weight: 600; font-size: 12px; color: #333;">Description</label>
     <input type="text" id="editDesc" placeholder="Description">
     
+    <label style="display: block; margin-bottom: 8px; margin-top: 12px; font-weight: 600; font-size: 12px; color: #333;">Modifier le fichier (optionnel)</label>
+    <div class="upload-zone" id="editUploadZone" ondrop="handleEditDrop(event)" ondragover="handleEditDragOver(event)" ondragleave="handleEditDragLeave(event)" onclick="document.getElementById('editHiddenFileInput').click()">
+      <div class="icon">📁</div>
+      <p><strong>Déposer un nouveau fichier</strong></p>
+      <p style="font-size: 12px; color: #999;">ou cliquer pour parcourir</p>
+    </div>
+    <input type="file" id="editHiddenFileInput" onchange="handleEditFileSelect(event)">
+    <div id="editFileName" style="font-size: 12px; color: #185fa5; margin-top: 8px; text-align: center;"></div>
+    
     <button class="btn-submit" onclick="saveEdit()" style="margin-top: 14px;">Enregistrer</button>
     <button class="btn-cancel" onclick="closeEditModal()">Annuler</button>
   </div>
@@ -480,7 +489,7 @@ function closeDeleteModal() { document.getElementById("deleteModal").classList.r
 function clearCategoryError() { document.getElementById("categoryError").textContent = ""; }
 function clearEditCategoryError() { document.getElementById("editCategoryError").textContent = ""; }
 
-/* Drag-Drop Functions */
+/* Drag-Drop Functions pour modale ajout */
 function handleDragOver(e) {
   e.preventDefault();
   e.stopPropagation();
@@ -516,6 +525,44 @@ function displayFileName(filename) {
   document.getElementById("fileName").textContent = "✅ " + filename;
 }
 
+/* Drag-Drop Functions pour modale modification */
+let editSelectedFile = null;
+
+function handleEditDragOver(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  document.getElementById("editUploadZone").classList.add("drag-over");
+}
+
+function handleEditDragLeave(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  document.getElementById("editUploadZone").classList.remove("drag-over");
+}
+
+function handleEditDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  document.getElementById("editUploadZone").classList.remove("drag-over");
+  
+  let files = e.dataTransfer.files;
+  if (files.length > 0) {
+    editSelectedFile = files[0];
+    displayEditFileName(files[0].name);
+  }
+}
+
+function handleEditFileSelect(e) {
+  if (e.target.files.length > 0) {
+    editSelectedFile = e.target.files[0];
+    displayEditFileName(e.target.files[0].name);
+  }
+}
+
+function displayEditFileName(filename) {
+  document.getElementById("editFileName").textContent = "✅ " + filename;
+}
+
 let editContext = {};
 
 function openEditModifier(btn) { 
@@ -527,20 +574,29 @@ function openEditModifier(btn) {
 
 function openEditModal(id, name, desc, category) { 
   editContext = { id, name, desc, category }; 
+  editSelectedFile = null; // Réinitialiser le fichier
   document.getElementById("editCategory").value = category; 
   document.getElementById("editName").value = name; 
   document.getElementById("editDesc").value = desc; 
+  document.getElementById("editFileName").textContent = "";
+  document.getElementById("editHiddenFileInput").value = "";
   document.getElementById("editCategoryError").textContent = "";
   document.getElementById("editModal").classList.add("active"); 
 }
 
-function closeEditModal() { document.getElementById("editModal").classList.remove("active"); }
+function closeEditModal() { 
+  document.getElementById("editModal").classList.remove("active");
+  editSelectedFile = null;
+  document.getElementById("editFileName").textContent = "";
+  document.getElementById("editHiddenFileInput").value = "";
+}
 
 async function saveEdit() {
   let btn = event.target;
   btn.disabled = true;
   btn.style.opacity = "0.5";
   btn.style.cursor = "not-allowed";
+  btn.textContent = "Enregistrement...";
   
   let category = document.getElementById("editCategory").value;
   let name = document.getElementById("editName").value;
@@ -548,20 +604,33 @@ async function saveEdit() {
   
   if (!name) { 
     msg("❌ Remplis le nom", false); 
-    btn.disabled = false; 
-    btn.style.opacity = "1"; 
-    btn.style.cursor = "pointer"; 
+    resetEditBtn(btn);
     return; 
   }
   
   if (!category) {
     document.getElementById("editCategoryError").textContent = "❌ Sélectionne une catégorie";
-    btn.disabled = false; 
-    btn.style.opacity = "1"; 
-    btn.style.cursor = "pointer"; 
+    resetEditBtn(btn);
     return;
   }
   
+  // Si un nouveau fichier est sélectionné, l'uploader d'abord
+  if (editSelectedFile) {
+    await saveEditWithNewFile(name, desc, category, editSelectedFile, btn);
+  } else {
+    // Sinon, juste modifier les métadonnées
+    await saveEditMetadata(name, desc, category, btn);
+  }
+}
+
+function resetEditBtn(btn) {
+  btn.disabled = false;
+  btn.style.opacity = "1";
+  btn.style.cursor = "pointer";
+  btn.textContent = "Enregistrer";
+}
+
+async function saveEditMetadata(name, desc, category, btn) {
   try {
     let r = await fetch(API, {
       method: "POST",
@@ -572,22 +641,67 @@ async function saveEdit() {
     if (j && j.success) {
       msg("✅ Modifié!", true);
       closeEditModal();
-      btn.disabled = false;
-      btn.style.opacity = "1";
-      btn.style.cursor = "pointer";
+      resetEditBtn(event.target);
       setTimeout(load, 500);
     } else {
       msg("❌ Erreur: " + (j?.message || "unknown"), false);
-      btn.disabled = false;
-      btn.style.opacity = "1";
-      btn.style.cursor = "pointer";
+      resetEditBtn(event.target);
     }
   } catch (e) {
     msg("❌ Erreur: " + e.message, false);
-    btn.disabled = false;
-    btn.style.opacity = "1";
-    btn.style.cursor = "pointer";
+    resetEditBtn(event.target);
   }
+}
+
+async function saveEditWithNewFile(name, desc, category, file, btn) {
+  // Vérifier taille fichier
+  const maxSize = 15 * 1024 * 1024; // 15MB
+  if (file.size > maxSize) {
+    msg("❌ Fichier trop volumineux (max 15MB)", false);
+    resetEditBtn(btn);
+    return;
+  }
+  
+  let reader = new FileReader();
+  reader.onload = async (e) => {
+    let data = e.target.result.split(",")[1];
+    
+    try {
+      let r = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ 
+          action: "update", 
+          id: editContext.id, 
+          name: name, 
+          desc: desc, 
+          category: category,
+          filename: file.name,
+          file: data
+        })
+      });
+      let j = await r.json();
+      if (j && j.success) {
+        msg("✅ Document mis à jour!", true);
+        closeEditModal();
+        resetEditBtn(btn);
+        setTimeout(load, 500);
+      } else {
+        msg("❌ Erreur: " + (j?.message || "unknown"), false);
+        resetEditBtn(btn);
+      }
+    } catch (e) {
+      msg("❌ Erreur: " + e.message, false);
+      resetEditBtn(btn);
+    }
+  };
+  
+  reader.onerror = () => {
+    msg("❌ Erreur de lecture du fichier", false);
+    resetEditBtn(btn);
+  };
+  
+  reader.readAsDataURL(file);
 }
 
 async function load() {
@@ -599,7 +713,9 @@ async function load() {
       filteredDocs = [...docs];
       render();
     }
-  } catch (e) { console.error(e); }
+  } catch (e) { 
+    console.error("Load error:", e.message);
+  }
 }
 
 async function upload() {
@@ -607,6 +723,7 @@ async function upload() {
   btn.disabled = true;
   btn.style.opacity = "0.5";
   btn.style.cursor = "not-allowed";
+  btn.textContent = "Envoi en cours...";
   
   let category = document.getElementById("docCategory").value;
   let docName = document.getElementById("docName").value;
@@ -614,51 +731,107 @@ async function upload() {
   
   if (!docName || !selectedFile) { 
     msg("Remplis tous les champs requis", false); 
-    btn.disabled = false; 
-    btn.style.opacity = "1"; 
-    btn.style.cursor = "pointer"; 
+    resetUploadBtn(btn);
     return; 
   }
   
   if (!category) {
     document.getElementById("categoryError").textContent = "❌ Sélectionne une catégorie";
-    btn.disabled = false; 
-    btn.style.opacity = "1"; 
-    btn.style.cursor = "pointer"; 
+    resetUploadBtn(btn);
+    return;
+  }
+  
+  // Vérifier la taille du fichier (limite: 15MB avant conversion)
+  const maxSize = 15 * 1024 * 1024; // 15MB
+  if (selectedFile.size > maxSize) {
+    msg("❌ Fichier trop volumineux (max 15MB)", false);
+    resetUploadBtn(btn);
     return;
   }
   
   let reader = new FileReader();
   reader.onload = async (e) => {
     let data = e.target.result.split(",")[1];
-    try {
-      let r = await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ cat: "document", name: docName, filename: selectedFile.name, date: new Date().toISOString().split("T")[0], desc: docDesc || "", category: category, file: data })
-      });
-      let j = await r.json();
-      if (j && j.success) {
-        msg("✅ Document ajouté!", true);
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.style.cursor = "pointer";
-        closeModal();
-        setTimeout(load, 500);
-      } else {
-        msg("❌ Erreur: " + (j?.message || "unknown"), false);
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.style.cursor = "pointer";
-      }
-    } catch (e) {
-      msg("❌ Erreur: " + e.message, false);
-      btn.disabled = false;
-      btn.style.opacity = "1";
-      btn.style.cursor = "pointer";
+    
+    // Vérifier la taille en base64
+    const base64Size = data.length * 0.75; // base64 = +33%
+    if (base64Size > 50 * 1024 * 1024) {
+      msg("❌ Fichier trop volumineux après encodage", false);
+      resetUploadBtn(btn);
+      return;
     }
+    
+    await uploadWithRetry(
+      docName, 
+      selectedFile.name, 
+      docDesc, 
+      category, 
+      data, 
+      btn,
+      3 // 3 tentatives
+    );
   };
+  
+  reader.onerror = () => {
+    msg("❌ Erreur de lecture du fichier", false);
+    resetUploadBtn(btn);
+  };
+  
   reader.readAsDataURL(selectedFile);
+}
+
+function resetUploadBtn(btn) {
+  btn.disabled = false;
+  btn.style.opacity = "1";
+  btn.style.cursor = "pointer";
+  btn.textContent = "Ajouter";
+}
+
+async function uploadWithRetry(docName, filename, docDesc, category, data, btn, retries) {
+  try {
+    // Préparer le payload
+    const payload = { 
+      cat: "document", 
+      name: docName, 
+      filename: filename, 
+      date: new Date().toISOString().split("T")[0], 
+      desc: docDesc || "", 
+      category: category, 
+      file: data 
+    };
+
+    let r = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" }, // ✅ IMPORTANT: text/plain comme le GAS l'attend
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(60000)
+    });
+    
+    if (!r.ok) {
+      throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+    }
+    
+    let j = await r.json();
+    if (j && j.success) {
+      msg("✅ Document ajouté!", true);
+      resetUploadBtn(btn);
+      closeModal();
+      setTimeout(load, 500);
+    } else {
+      throw new Error(j?.message || "Erreur serveur");
+    }
+  } catch (e) {
+    console.error("Upload error:", e.message, e.stack);
+    
+    if (retries > 0) {
+      msg("⏳ Nouvelle tentative...", false);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      await uploadWithRetry(docName, filename, docDesc, category, data, btn, retries - 1);
+    } else {
+      msg("❌ Erreur: " + e.message, false);
+      resetUploadBtn(btn);
+    }
+  }
 }
 
 async function deleteDoc(url, name, id) {
