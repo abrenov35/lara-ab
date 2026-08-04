@@ -42,13 +42,15 @@
     .doc-info { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
     .doc-name { 
       font-weight: bold; 
-      font-size: 14px; 
-      margin-bottom: 8px;
+      font-size: 13px; 
+      margin-bottom: 0;
       word-break: break-word;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+    }
+    .doc-desc {
+      font-size: 11px;
+      color: #666;
+      margin-top: 0;
+      word-break: break-word;
     }
     .doc-emoji { font-size: 32px; margin-bottom: 8px; }
     .doc-category { display: none; }
@@ -564,10 +566,11 @@ function render() {
         <div class="category-docs">`;
       
       grouped[category].forEach(d => {
+        const descText = d.desc ? ` - ${d.desc}` : '';
         html += `<div class="doc-item">
           <div class="doc-info">
             <div class="doc-emoji">${getCategoryEmoji(category)}</div>
-            <div class="doc-name">${d.name}</div>
+            <div class="doc-name">${d.name}${descText}</div>
           </div>
           <div class="doc-actions">
             <button data-id="${d.id}" onclick="openEditModifier(this)" title="Modifier">✏️</button>
