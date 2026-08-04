@@ -26,6 +26,12 @@
     .doc-name { font-weight: bold; font-size: 16px; }
     .doc-category { display: inline-block; background: #E8F4F8; color: #185fa5; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-top: 6px; margin-right: 8px; }
     .doc-meta { font-size: 12px; color: #666; margin-top: 5px; }
+    
+    /* Styles pour le groupement par catégorie */
+    .category-section { margin-bottom: 30px; }
+    .category-title { font-size: 18px; font-weight: bold; color: #0d3a66; padding: 12px 0; border-bottom: 3px solid #185fa5; margin-bottom: 15px; }
+    .category-docs { }
+
     .doc-actions { display: flex; gap: 8px; }
     .doc-actions button { padding: 8px 16px; border-radius: 4px; border: none; font-weight: bold; font-size: 13px; cursor: pointer; }
     .btn-view { background: #185fa5; color: white; text-decoration: none; display: inline-block; padding: 8px 16px; }
@@ -470,31 +476,53 @@ function formatDate(dateStr) {
 
 function render() {
   let html = "";
+  
   if (filteredDocs.length === 0) {
     html = '<div class="empty">Aucun document</div>';
   } else {
+    // Grouper les documents par catégorie
+    const grouped = {};
+    
     filteredDocs.forEach(d => {
-      let meta = [];
-      if (d.date) meta.push(`📅 ${formatDate(d.date)}`);
-      if (d.filename) meta.push(`📁 ${d.filename}`);
-      if (d.desc) meta.push(`📝 ${d.desc}`);
+      const cat = d.category || "Sans catégorie";
+      if (!grouped[cat]) {
+        grouped[cat] = [];
+      }
+      grouped[cat].push(d);
+    });
+    
+    // Trier les catégories alphabétiquement
+    const sortedCategories = Object.keys(grouped).sort();
+    
+    // Créer le HTML pour chaque catégorie
+    sortedCategories.forEach(category => {
+      html += `<div class="category-section">
+        <h3 class="category-title">📁 ${category}</h3>
+        <div class="category-docs">`;
       
-      let categoryBadge = d.category ? `<div class="doc-category">[ ${d.category} ]</div>` : '';
+      grouped[category].forEach(d => {
+        let meta = [];
+        if (d.date) meta.push(`📅 ${formatDate(d.date)}`);
+        if (d.filename) meta.push(`📁 ${d.filename}`);
+        if (d.desc) meta.push(`📝 ${d.desc}`);
+        
+        html += `<div class="doc-item">
+          <div class="doc-info">
+            <div class="doc-name">${d.name}</div>
+            <div class="doc-meta">${meta.join(" | ")}</div>
+          </div>
+          <div class="doc-actions">
+            <button style="padding: 6px 14px; border-radius: 20px; background: #FFF4E6; color: #FF8C42; border: 1px solid #FFD699; cursor: pointer; font-size: 13px;" data-id="${d.id}" onclick="openEditModifier(this)">✏️ Modifier</button>
+            <button onclick="openDocumentPreview('${d.url}', '${d.filename}')" style="padding: 6px 14px; border-radius: 20px; background: #E8F4F8; color: #185fa5; border: 1px solid #B3E0FF; cursor: pointer; font-size: 13px; font-weight: 600;">👁️ Voir</button>
+            <button style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 0;" onclick="deleteDoc('${d.url}', '${d.name.replace(/'/g, "\\'")}', '${d.id}')">🗑️</button>
+          </div>
+        </div>`;
+      });
       
-      html += `<div class="doc-item">
-        <div class="doc-info">
-          <div class="doc-name">${d.name}</div>
-          ${categoryBadge}
-          <div class="doc-meta">${meta.join(" | ")}</div>
-        </div>
-        <div class="doc-actions">
-          <button style="padding: 6px 14px; border-radius: 20px; background: #FFF4E6; color: #FF8C42; border: 1px solid #FFD699; cursor: pointer; font-size: 13px;" data-id="${d.id}" onclick="openEditModifier(this)">✏️ Modifier</button>
-          <button onclick="openDocumentPreview('${d.url}', '${d.filename}')" style="padding: 6px 14px; border-radius: 20px; background: #E8F4F8; color: #185fa5; border: 1px solid #B3E0FF; cursor: pointer; font-size: 13px; font-weight: 600;">👁️ Voir</button>
-          <button style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 0;" onclick="deleteDoc('${d.url}', '${d.name.replace(/'/g, "\\'")}', '${d.id}')">🗑️</button>
-        </div>
-      </div>`;
+      html += `</div></div>`;
     });
   }
+  
   document.getElementById("docsList").innerHTML = html;
 }
 
