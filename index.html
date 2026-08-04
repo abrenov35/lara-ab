@@ -1,10 +1,10 @@
-<!-- LARA v057 -->
+<!-- LARA v058 - Avec intégration complète des catégories -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LARA</title>
+  <title>LARA v058</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial; background: #f5f5f5; padding: 20px; }
@@ -14,9 +14,17 @@
     .btn { background: #185fa5; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .btn:hover { background: #0d3a66; }
     .documents { background: white; border-radius: 8px; padding: 20px; }
+    
+    /* Filtre et recherche */
+    .filter-section { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+    .filter-section select, .filter-section input { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+    .filter-section select { min-width: 200px; }
+    .filter-section input { flex: 1; min-width: 250px; }
+    
     .doc-item { border: 1px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
     .doc-info { flex: 1; }
     .doc-name { font-weight: bold; font-size: 16px; }
+    .doc-category { display: inline-block; background: #E8F4F8; color: #185fa5; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-top: 6px; margin-right: 8px; }
     .doc-meta { font-size: 12px; color: #666; margin-top: 5px; }
     .doc-actions { display: flex; gap: 8px; }
     .doc-actions button { padding: 8px 16px; border-radius: 4px; border: none; font-weight: bold; font-size: 13px; cursor: pointer; }
@@ -28,10 +36,14 @@
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
     .modal.active { display: flex; }
     .modal-box { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 400px; }
-    .modal-box input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
+    .modal-box h2 { margin-bottom: 20px; }
+    .modal-box input, .modal-box select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+    .modal-box select { cursor: pointer; }
     .modal-box button { width: 100%; padding: 10px; margin: 8px 0; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
     .btn-submit { background: #2e7d46; color: white; }
+    .btn-submit:hover { background: #245a37; }
     .btn-cancel { background: #999; color: white; }
+    .btn-cancel:hover { background: #777; }
     .msg { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 6px; color: white; z-index: 2000; animation: slide 0.3s; }
     .msg.ok { background: #2e7d46; }
     .msg.err { background: #b3352c; }
@@ -49,19 +61,43 @@
     .btn-preview-open:hover { background: #E67E2F; }
     .btn-preview-close { background: #999; color: white; }
     .btn-preview-close:hover { background: #777; }
+    .error-msg { color: #b3352c; font-size: 12px; margin-top: 5px; }
   </style>
 </head>
 <body>
 
 <div class="container">
   <header>
-    <div><h1>📋 LARA <span style="font-size: 12px; opacity: 0.6;">v057</span></h1><p style="font-size: 12px; margin-top: 5px; opacity: 0.8;">Gestion Documentaire de Chantier</p></div>
+    <div><h1>📋 LARA <span style="font-size: 12px; opacity: 0.6;">v058</span></h1><p style="font-size: 12px; margin-top: 5px; opacity: 0.8;">Gestion Documentaire de Chantier</p></div>
     <button class="btn" onclick="openModal()">+ Ajouter un document</button>
     <button class="btn" onclick="openInfo()" style="background: #185fa5; margin-left: 10px;">ℹ️ Info</button>
   </header>
 
   <div class="documents">
     <h2 style="margin-bottom: 15px;">Documents</h2>
+    
+    <!-- Filtre et recherche -->
+    <div class="filter-section">
+      <select id="categoryFilter" onchange="applyFiltersAndSearch()">
+        <option value="">Toutes les catégories</option>
+        <option value="Devis et avenants">Devis et avenants</option>
+        <option value="Plans et études">Plans et études</option>
+        <option value="Photos chantier">Photos chantier</option>
+        <option value="Commandes et fournisseurs">Commandes et fournisseurs</option>
+        <option value="Fiches techniques">Fiches techniques</option>
+        <option value="Planning">Planning</option>
+        <option value="Comptes rendus">Comptes rendus</option>
+        <option value="Validations clients">Validations clients</option>
+        <option value="Facturation">Facturation</option>
+        <option value="Sous-traitants">Sous-traitants</option>
+        <option value="Administratif et assurances">Administratif et assurances</option>
+        <option value="Réception et réserves">Réception et réserves</option>
+        <option value="SAV">SAV</option>
+        <option value="Autres">Autres</option>
+      </select>
+      <input type="text" id="searchInput" placeholder="Rechercher par nom, description, fichier..." onkeyup="applyFiltersAndSearch()">
+    </div>
+    
     <div id="docsList">
       <div class="empty">Chargement...</div>
     </div>
@@ -76,7 +112,9 @@
     <p>LARA est une application web de <strong>gestion documentaire de chantier</strong> pour <strong>AB RENOV 35</strong>. Elle permet de centraliser, organiser et gérer tous les documents liés aux projets de construction et rénovation.</p>
     <h3 style="margin-top: 20px; color: #185fa5;">Fonctionnalités</h3>
     <ul style="margin-left: 20px;">
+      <li><strong>Catégories:</strong> Organiser par type de document (devis, plans, photos, etc.)</li>
       <li><strong>Upload:</strong> Ajouter des documents avec nom, description et fichier</li>
+      <li><strong>Filtre & Recherche:</strong> Trouver rapidement vos documents</li>
       <li><strong>Liste en temps réel:</strong> Voir tous les documents avec auto-refresh</li>
       <li><strong>Visualisation:</strong> Ouvrir les fichiers dans Google Drive</li>
       <li><strong>Suppression:</strong> Effacer les documents du Sheets ET du Drive</li>
@@ -84,28 +122,71 @@
     <h3 style="margin-top: 20px; color: #185fa5;">Stockage</h3>
     <ul style="margin-left: 20px;">
       <li>📁 Google Drive - Documents réels</li>
-      <li>📊 Google Sheets - Métadonnées</li>
+      <li>📊 Google Sheets - Métadonnées + Catégories</li>
       <li>☁️ Stockage centralisé et sécurisé</li>
     </ul>
-    <h3 style="margin-top: 20px; color: #185fa5;">Avantages</h3>
-    <ul style="margin-left: 20px;">
-      <li>✅ Gratuit (utilise Google)</li>
-      <li>✅ Interface simple et intuitive</li>
-      <li>✅ Uploads instantanés</li>
-      <li>✅ Accessible sur web et mobile</li>
-      <li>✅ Données toujours sauvegardées</li>
-    </ul>
     <h3 style="margin-top: 20px; color: #185fa5;">Version</h3>
-    <p><strong>LARA v057</strong> - Production Ready</p>
+    <p><strong>LARA v058</strong> - Production Ready avec Catégories</p>
     <button class="btn-cancel" onclick="closeInfo()" style="width: 100%; margin-top: 20px;">Fermer</button>
   </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
-<!-- Edit Modal -->
+<!-- Modal Ajout -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h2>+ Ajouter un Document</h2>
+    <label style="display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px;">Catégorie *</label>
+    <select id="docCategory" required onchange="clearCategoryError()">
+      <option value="">Choisir une catégorie</option>
+      <option value="Devis et avenants">Devis et avenants</option>
+      <option value="Plans et études">Plans et études</option>
+      <option value="Photos chantier">Photos chantier</option>
+      <option value="Commandes et fournisseurs">Commandes et fournisseurs</option>
+      <option value="Fiches techniques">Fiches techniques</option>
+      <option value="Planning">Planning</option>
+      <option value="Comptes rendus">Comptes rendus</option>
+      <option value="Validations clients">Validations clients</option>
+      <option value="Facturation">Facturation</option>
+      <option value="Sous-traitants">Sous-traitants</option>
+      <option value="Administratif et assurances">Administratif et assurances</option>
+      <option value="Réception et réserves">Réception et réserves</option>
+      <option value="SAV">SAV</option>
+      <option value="Autres">Autres</option>
+    </select>
+    <div id="categoryError" class="error-msg"></div>
+    
+    <input type="text" id="docName" placeholder="Nom du document" required>
+    <input type="text" id="docDesc" placeholder="Description (optionnel)">
+    <input type="file" id="file" required>
+    <button class="btn-submit" onclick="upload()">Ajouter</button>
+    <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+  </div>
+</div>
+
+<!-- Modal Modification -->
 <div class="modal" id="editModal">
   <div class="modal-box">
     <h2>✏️ Modifier le document</h2>
+    <label style="display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px;">Catégorie *</label>
+    <select id="editCategory" required onchange="clearEditCategoryError()">
+      <option value="">Choisir une catégorie</option>
+      <option value="Devis et avenants">Devis et avenants</option>
+      <option value="Plans et études">Plans et études</option>
+      <option value="Photos chantier">Photos chantier</option>
+      <option value="Commandes et fournisseurs">Commandes et fournisseurs</option>
+      <option value="Fiches techniques">Fiches techniques</option>
+      <option value="Planning">Planning</option>
+      <option value="Comptes rendus">Comptes rendus</option>
+      <option value="Validations clients">Validations clients</option>
+      <option value="Facturation">Facturation</option>
+      <option value="Sous-traitants">Sous-traitants</option>
+      <option value="Administratif et assurances">Administratif et assurances</option>
+      <option value="Réception et réserves">Réception et réserves</option>
+      <option value="SAV">SAV</option>
+      <option value="Autres">Autres</option>
+    </select>
+    <div id="editCategoryError" class="error-msg"></div>
+    
     <input type="text" id="editName" placeholder="Nom du document" required>
     <input type="text" id="editDesc" placeholder="Description">
     <button class="btn-submit" onclick="saveEdit()">Enregistrer</button>
@@ -113,6 +194,7 @@
   </div>
 </div>
 
+<!-- Modal Suppression -->
 <div class="modal" id="deleteModal">
   <div class="modal-box" style="text-align: center; max-width: 350px;">
     <h2 id="deleteConfirmTitle" style="color: #b3352c; margin-bottom: 20px;">Supprimer ce document?</h2>
@@ -124,20 +206,27 @@
   </div>
 </div>
 
-<div class="modal" id="modal">
-  <div class="modal-box">
-    <h2>+ Ajouter un Document</h2>
-    <input type="text" id="docName" placeholder="Nom du document" required>
-    <input type="text" id="docDesc" placeholder="Description (optionnel)">
-    <input type="file" id="file" required>
-    <button class="btn-submit" onclick="upload()">Ajouter</button>
-    <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+<!-- Modal Prévisualisation Document -->
+<div class="preview-modal" id="previewModal">
+  <div class="preview-box">
+    <div class="preview-header">
+      <h3>📄 <span id="previewFilename">Document</span></h3>
+      <button onclick="closeDocumentPreview()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0;">×</button>
+    </div>
+    <div class="preview-body">
+      <iframe id="previewIframe" allow="autoplay"></iframe>
+    </div>
+    <div class="preview-footer">
+      <button class="btn-preview-close" onclick="closeDocumentPreview()">Fermer</button>
+      <a id="previewOpenBtn" href="#" target="_blank" class="btn-preview-open">Ouvrir dans Drive</a>
+    </div>
   </div>
 </div>
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbyfxVPKymgq8LeqKkhLyRaMGhsT4SQbC-GJCntbUvw7-453Z8yqwRiTfjAGEWX0SEyX/exec";
 let docs = [];
+let filteredDocs = [];
 
 function msg(text, success) {
   let msgEl = document.createElement("div");
@@ -147,30 +236,74 @@ function msg(text, success) {
   setTimeout(() => msgEl.remove(), 3000);
 }
 
-function closeModal() { document.getElementById("modal").classList.remove("active"); document.getElementById("docName").value = ""; document.getElementById("docDesc").value = ""; document.getElementById("file").value = ""; }
+function closeModal() { 
+  document.getElementById("modal").classList.remove("active"); 
+  document.getElementById("docCategory").value = ""; 
+  document.getElementById("docName").value = ""; 
+  document.getElementById("docDesc").value = ""; 
+  document.getElementById("file").value = ""; 
+  document.getElementById("categoryError").textContent = "";
+}
 
 function openModal() { document.getElementById("modal").classList.add("active"); }
 function openInfo() { document.getElementById("infoModal").classList.add("active"); }
 function closeInfo() { document.getElementById("infoModal").classList.remove("active"); }
 function closeDeleteModal() { document.getElementById("deleteModal").classList.remove("active"); }
+
+function clearCategoryError() { document.getElementById("categoryError").textContent = ""; }
+function clearEditCategoryError() { document.getElementById("editCategoryError").textContent = ""; }
+
 let editContext = {};
-function openEditModifier(btn) { let row = btn.closest(".doc-item"); let id = btn.getAttribute("data-id"); let doc = docs.find(d => d.id === id); if (!doc) return; openEditModal(id, doc.name, doc.desc); }
-function openEditModal(id, name, desc) { editContext = { id, name, desc }; document.getElementById("editName").value = name; document.getElementById("editDesc").value = desc; document.getElementById("editModal").classList.add("active"); }
+
+function openEditModifier(btn) { 
+  let id = btn.getAttribute("data-id"); 
+  let doc = docs.find(d => d.id === id); 
+  if (!doc) return; 
+  openEditModal(id, doc.name, doc.desc, doc.category || ""); 
+}
+
+function openEditModal(id, name, desc, category) { 
+  editContext = { id, name, desc, category }; 
+  document.getElementById("editCategory").value = category; 
+  document.getElementById("editName").value = name; 
+  document.getElementById("editDesc").value = desc; 
+  document.getElementById("editCategoryError").textContent = "";
+  document.getElementById("editModal").classList.add("active"); 
+}
+
 function closeEditModal() { document.getElementById("editModal").classList.remove("active"); }
+
 async function saveEdit() {
-  let btn = document.querySelector('button[onclick="saveEdit()"]') || event.target;
+  let btn = event.target;
   btn.disabled = true;
   btn.style.opacity = "0.5";
   btn.style.cursor = "not-allowed";
   
+  let category = document.getElementById("editCategory").value;
   let name = document.getElementById("editName").value;
   let desc = document.getElementById("editDesc").value;
-  if (!name) { msg("❌ Remplis le nom", false); btn.disabled = false; btn.style.opacity = "1"; btn.style.cursor = "pointer"; return; }
+  
+  if (!name) { 
+    msg("❌ Remplis le nom", false); 
+    btn.disabled = false; 
+    btn.style.opacity = "1"; 
+    btn.style.cursor = "pointer"; 
+    return; 
+  }
+  
+  if (!category) {
+    document.getElementById("editCategoryError").textContent = "❌ Sélectionne une catégorie";
+    btn.disabled = false; 
+    btn.style.opacity = "1"; 
+    btn.style.cursor = "pointer"; 
+    return;
+  }
+  
   try {
     let r = await fetch(API, {
       method: "POST",
       headers: { "Content-Type": "text/plain" },
-      body: JSON.stringify({ action: "update", id: editContext.id, name: name, desc: desc })
+      body: JSON.stringify({ action: "update", id: editContext.id, name: name, desc: desc, category: category })
     });
     let j = await r.json();
     if (j && j.success) {
@@ -200,6 +333,7 @@ async function load() {
     let j = await r.json();
     if (j && j.ok && j.data) {
       docs = j.data;
+      filteredDocs = [...docs];
       render();
     }
   } catch (e) { console.error(e); }
@@ -210,10 +344,27 @@ async function upload() {
   btn.disabled = true;
   btn.style.opacity = "0.5";
   btn.style.cursor = "not-allowed";
+  
+  let category = document.getElementById("docCategory").value;
   let docName = document.getElementById("docName").value;
   let docDesc = document.getElementById("docDesc").value;
   let file = document.getElementById("file").files[0];
-  if (!docName || !file) { msg("Remplis tous les champs requis", false); btn.disabled = false; btn.style.opacity = "1"; btn.style.cursor = "pointer"; return; }
+  
+  if (!docName || !file) { 
+    msg("Remplis tous les champs requis", false); 
+    btn.disabled = false; 
+    btn.style.opacity = "1"; 
+    btn.style.cursor = "pointer"; 
+    return; 
+  }
+  
+  if (!category) {
+    document.getElementById("categoryError").textContent = "❌ Sélectionne une catégorie";
+    btn.disabled = false; 
+    btn.style.opacity = "1"; 
+    btn.style.cursor = "pointer"; 
+    return;
+  }
   
   let reader = new FileReader();
   reader.onload = async (e) => {
@@ -222,7 +373,7 @@ async function upload() {
       let r = await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ cat: "document", name: docName, filename: file.name, date: new Date().toISOString().split("T")[0], desc: docDesc || "", file: data })
+        body: JSON.stringify({ cat: "document", name: docName, filename: file.name, date: new Date().toISOString().split("T")[0], desc: docDesc || "", category: category, file: data })
       });
       let j = await r.json();
       if (j && j.success) {
@@ -240,27 +391,28 @@ async function upload() {
       }
     } catch (e) {
       msg("❌ Erreur: " + e.message, false);
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.style.cursor = "pointer";
+      btn.disabled = false;
+      btn.style.opacity = "1";
+      btn.style.cursor = "pointer";
     }
   };
   reader.readAsDataURL(file);
 }
 
-async function deleteDoc(url, name) {
+async function deleteDoc(url, name, id) {
   let fileId = url.match(/\/d\/([^\/]+)/)[1];
   if (!fileId) { msg("❌ ID introuvable", false); return; }
-  deleteContext = { url, name, fileId };
+  deleteContext = { url, name, fileId, id };
   document.getElementById("deleteConfirmTitle").textContent = `Supprimer "${name}" ?`;
   document.getElementById("deleteModal").classList.add("active");
 }
+
 async function confirmDelete() {
   let btn = event.target;
   btn.disabled = true;
   btn.style.opacity = "0.5";
   btn.style.cursor = "not-allowed";
-  let { url, name, fileId } = deleteContext;
+  let { url, name, fileId, id } = deleteContext;
   try {
     let r = await fetch(API, {
       method: "POST",
@@ -277,39 +429,68 @@ async function confirmDelete() {
       setTimeout(load, 500);
     } else {
       msg("❌ Erreur: " + (j?.message || "unknown"), false);
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.style.cursor = "pointer";
+      btn.disabled = false;
+      btn.style.opacity = "1";
+      btn.style.cursor = "pointer";
     }
   } catch (e) {
     msg("❌ Erreur: " + e.message, false);
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.style.cursor = "pointer";
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.style.cursor = "pointer";
   }
 }
+
 let deleteContext = {};
 
-function extractIdFromUrl(url) { let match = url.match(/\/d\/([^\/]+)/); return match ? match[1] : ""; } function render() {
+function applyFiltersAndSearch() {
+  let categoryFilter = document.getElementById("categoryFilter").value;
+  let searchTerm = document.getElementById("searchInput").value.toLowerCase();
+  
+  filteredDocs = docs.filter(d => {
+    let matchCategory = !categoryFilter || d.category === categoryFilter;
+    let matchSearch = !searchTerm || 
+      (d.name && d.name.toLowerCase().includes(searchTerm)) ||
+      (d.desc && d.desc.toLowerCase().includes(searchTerm)) ||
+      (d.filename && d.filename.toLowerCase().includes(searchTerm)) ||
+      (d.category && d.category.toLowerCase().includes(searchTerm));
+    
+    return matchCategory && matchSearch;
+  });
+  
+  render();
+}
+
+function formatDate(dateStr) { 
+  if (!dateStr) return ""; 
+  let dateOnly = dateStr.split("T")[0]; 
+  let [y, m, d] = dateOnly.split("-"); 
+  return `${d}/${m}/${y}`; 
+}
+
+function render() {
   let html = "";
-  if (docs.length === 0) {
+  if (filteredDocs.length === 0) {
     html = '<div class="empty">Aucun document</div>';
   } else {
-    docs.forEach(d => {
-      function formatDate(dateStr) { if (!dateStr) return ""; let dateOnly = dateStr.split("T")[0]; let [y, m, d] = dateOnly.split("-"); return `${d}/${m}/${y}`; } let meta = [];
+    filteredDocs.forEach(d => {
+      let meta = [];
       if (d.date) meta.push(`📅 ${formatDate(d.date)}`);
       if (d.filename) meta.push(`📁 ${d.filename}`);
-      
       if (d.desc) meta.push(`📝 ${d.desc}`);
+      
+      let categoryBadge = d.category ? `<div class="doc-category">[ ${d.category} ]</div>` : '';
       
       html += `<div class="doc-item">
         <div class="doc-info">
           <div class="doc-name">${d.name}</div>
+          ${categoryBadge}
           <div class="doc-meta">${meta.join(" | ")}</div>
         </div>
         <div class="doc-actions">
-          <button style="padding: 6px 14px; border-radius: 20px; background: #FFF4E6; color: #FF8C42; border: 1px solid #FFD699; cursor: pointer; font-size: 13px; border-radius: 20px;" data-id="${d.id}" onclick="openEditModifier(this)">✏️ Modifier</button> <button onclick="openDocumentPreview('${d.url}', '${d.filename}')" style="padding: 6px 14px; border-radius: 20px; background: #E8F4F8; color: #185fa5; border: 1px solid #B3E0FF; cursor: pointer; font-size: 13px; font-weight: 600;">👁️ Voir</button>
-          <button style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 0;" onclick="deleteDoc('${d.url}', '${d.name.replace(/'/g, "\\'")}')">🗑️</button>
+          <button style="padding: 6px 14px; border-radius: 20px; background: #FFF4E6; color: #FF8C42; border: 1px solid #FFD699; cursor: pointer; font-size: 13px;" data-id="${d.id}" onclick="openEditModifier(this)">✏️ Modifier</button>
+          <button onclick="openDocumentPreview('${d.url}', '${d.filename}')" style="padding: 6px 14px; border-radius: 20px; background: #E8F4F8; color: #185fa5; border: 1px solid #B3E0FF; cursor: pointer; font-size: 13px; font-weight: 600;">👁️ Voir</button>
+          <button style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 0;" onclick="deleteDoc('${d.url}', '${d.name.replace(/'/g, "\\'")}', '${d.id}')">🗑️</button>
         </div>
       </div>`;
     });
@@ -317,10 +498,6 @@ function extractIdFromUrl(url) { let match = url.match(/\/d\/([^\/]+)/); return 
   document.getElementById("docsList").innerHTML = html;
 }
 
-load();
-setInterval(load, 5000);
-
-// Modal de prévisualisation
 function openDocumentPreview(url, filename) {
   document.getElementById("previewIframe").src = url.replace("/view", "/preview");
   document.getElementById("previewFilename").textContent = filename || "Document";
@@ -333,34 +510,18 @@ function closeDocumentPreview() {
   document.getElementById("previewIframe").src = "";
 }
 
-// Fermer le modal au clic sur le fond
 document.addEventListener("click", function(e) {
   let modal = document.getElementById("previewModal");
   if (e.target === modal) closeDocumentPreview();
 });
 
-// Échap pour fermer
 document.addEventListener("keydown", function(e) {
   if (e.key === "Escape") closeDocumentPreview();
 });
-</script>
 
-<!-- Modal Prévisualisation Document -->
-<div class="preview-modal" id="previewModal">
-  <div class="preview-box">
-    <div class="preview-header">
-      <h3>📄 <span id="previewFilename">Document</span></h3>
-      <button onclick="closeDocumentPreview()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0;">×</button>
-    </div>
-    <div class="preview-body">
-      <iframe id="previewIframe" allow="autoplay"></iframe>
-    </div>
-    <div class="preview-footer">
-      <button class="btn-preview-close" onclick="closeDocumentPreview()">Fermer</button>
-      <a id="previewOpenBtn" href="#" target="_blank" class="btn-preview-open">Ouvrir dans Drive</a>
-    </div>
-  </div>
-</div>
+load();
+setInterval(load, 5000);
+</script>
 
 </body>
 </html>
