@@ -21,60 +21,66 @@
     .filter-section select { min-width: 200px; }
     .filter-section input { flex: 1; min-width: 250px; }
     
-    /* Styles pour la vue emojis compacte */
-    .category-section { margin-bottom: 30px; }
-    .category-title { font-size: 18px; font-weight: bold; color: #0d3a66; padding: 12px 0; border-bottom: 3px solid #185fa5; margin-bottom: 15px; }
-    .category-docs { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
+    /* Styles pour la vue liste horizontale compacte */
+    .category-section { margin-bottom: 25px; }
+    .category-title { font-size: 16px; font-weight: bold; color: #0d3a66; padding: 10px 0; border-bottom: 2px solid #185fa5; margin-bottom: 12px; }
+    .category-docs { display: flex; flex-direction: column; gap: 8px; }
     
     .doc-item { 
       border: 1px solid #eee; 
-      padding: 15px; 
-      border-radius: 12px; 
+      padding: 10px 15px; 
+      border-radius: 6px; 
       display: flex; 
-      flex-direction: column;
       align-items: center;
       justify-content: space-between;
       background: #f9f9f9;
-      min-height: 140px;
-      text-align: center;
     }
     
-    .doc-info { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+    .doc-info { 
+      flex: 1; 
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .doc-emoji { 
+      font-size: 20px; 
+      min-width: 24px;
+      text-align: center;
+    }
     .doc-name { 
-      font-weight: bold; 
+      font-weight: 500; 
       font-size: 13px; 
-      margin-bottom: 0;
-      word-break: break-word;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .doc-desc {
-      font-size: 11px;
-      color: #666;
-      margin-top: 0;
-      word-break: break-word;
+      display: none;
     }
-    .doc-emoji { font-size: 32px; margin-bottom: 8px; }
     .doc-category { display: none; }
     .doc-meta { display: none; }
     
     .doc-actions { 
       display: flex; 
-      gap: 8px;
-      justify-content: center;
-      width: 100%;
+      gap: 6px;
+      margin-left: auto;
+      padding-left: 10px;
     }
     .doc-actions button { 
-      padding: 8px;
-      border-radius: 8px; 
+      padding: 6px;
+      border-radius: 6px; 
       border: none; 
-      font-weight: bold; 
       font-size: 16px; 
       cursor: pointer;
       background: #f0f0f0;
       transition: all 0.2s;
+      min-width: 32px;
+      text-align: center;
     }
     .doc-actions button:hover { 
       background: #e0e0e0;
-      transform: scale(1.1);
+      transform: scale(1.15);
     }
 
     .doc-actions { display: flex; gap: 8px; }
