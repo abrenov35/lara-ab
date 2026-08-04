@@ -21,16 +21,59 @@
     .filter-section select { min-width: 200px; }
     .filter-section input { flex: 1; min-width: 250px; }
     
-    .doc-item { border: 1px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
-    .doc-info { flex: 1; }
-    .doc-name { font-weight: bold; font-size: 16px; }
-    .doc-category { display: inline-block; background: #E8F4F8; color: #185fa5; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-top: 6px; margin-right: 8px; }
-    .doc-meta { font-size: 12px; color: #666; margin-top: 5px; }
-    
-    /* Styles pour le groupement par catégorie */
+    /* Styles pour la vue emojis compacte */
     .category-section { margin-bottom: 30px; }
     .category-title { font-size: 18px; font-weight: bold; color: #0d3a66; padding: 12px 0; border-bottom: 3px solid #185fa5; margin-bottom: 15px; }
-    .category-docs { }
+    .category-docs { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
+    
+    .doc-item { 
+      border: 1px solid #eee; 
+      padding: 15px; 
+      border-radius: 12px; 
+      display: flex; 
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      background: #f9f9f9;
+      min-height: 140px;
+      text-align: center;
+    }
+    
+    .doc-info { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+    .doc-name { 
+      font-weight: bold; 
+      font-size: 14px; 
+      margin-bottom: 8px;
+      word-break: break-word;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .doc-emoji { font-size: 32px; margin-bottom: 8px; }
+    .doc-category { display: none; }
+    .doc-meta { display: none; }
+    
+    .doc-actions { 
+      display: flex; 
+      gap: 8px;
+      justify-content: center;
+      width: 100%;
+    }
+    .doc-actions button { 
+      padding: 8px;
+      border-radius: 8px; 
+      border: none; 
+      font-weight: bold; 
+      font-size: 16px; 
+      cursor: pointer;
+      background: #f0f0f0;
+      transition: all 0.2s;
+    }
+    .doc-actions button:hover { 
+      background: #e0e0e0;
+      transform: scale(1.1);
+    }
 
     .doc-actions { display: flex; gap: 8px; }
     .doc-actions button { padding: 8px 16px; border-radius: 4px; border: none; font-weight: bold; font-size: 13px; cursor: pointer; }
@@ -230,7 +273,8 @@
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbyfxVPKymgq8LeqKkhLyRaMGhsT4SQbC-GJCntbUvw7-453Z8yqwRiTfjAGEWX0SEyX/exec";let docs = [];
+const API = "https://script.google.com/macros/s/AKfycbyfxVPKymgq8LeqKkhLyRaMGhsT4SQbC-GJCntbUvw7-453Z8yqwRiTfjAGEWX0SEyX/exec";
+let docs = [];
 let filteredDocs = [];
 
 function msg(text, success) {
@@ -473,6 +517,26 @@ function formatDate(dateStr) {
   return `${d}/${m}/${y}`; 
 }
 
+function getCategoryEmoji(category) {
+  const emojiMap = {
+    "Devis et avenants": "💰",
+    "Plans et études": "📐",
+    "Photos chantier": "📸",
+    "Commandes et fournisseurs": "🛒",
+    "Fiches techniques": "📋",
+    "Planning": "📅",
+    "Comptes rendus": "📝",
+    "Validations clients": "✅",
+    "Facturation": "💳",
+    "Sous-traitants": "👷",
+    "Administratif et assurances": "📄",
+    "Réception et réserves": "📦",
+    "SAV": "🔧",
+    "Autres": "📁"
+  };
+  return emojiMap[category] || "📄";
+}
+
 function render() {
   let html = "";
   
@@ -496,24 +560,19 @@ function render() {
     // Créer le HTML pour chaque catégorie
     sortedCategories.forEach(category => {
       html += `<div class="category-section">
-        <h3 class="category-title">📁 ${category}</h3>
+        <h3 class="category-title">${getCategoryEmoji(category)} ${category}</h3>
         <div class="category-docs">`;
       
       grouped[category].forEach(d => {
-        let meta = [];
-        if (d.date) meta.push(`📅 ${formatDate(d.date)}`);
-        if (d.filename) meta.push(`📁 ${d.filename}`);
-        if (d.desc) meta.push(`📝 ${d.desc}`);
-        
         html += `<div class="doc-item">
           <div class="doc-info">
+            <div class="doc-emoji">${getCategoryEmoji(category)}</div>
             <div class="doc-name">${d.name}</div>
-            <div class="doc-meta">${meta.join(" | ")}</div>
           </div>
           <div class="doc-actions">
-            <button style="padding: 6px 14px; border-radius: 20px; background: #FFF4E6; color: #FF8C42; border: 1px solid #FFD699; cursor: pointer; font-size: 13px;" data-id="${d.id}" onclick="openEditModifier(this)">✏️ Modifier</button>
-            <button onclick="openDocumentPreview('${d.url}', '${d.filename}')" style="padding: 6px 14px; border-radius: 20px; background: #E8F4F8; color: #185fa5; border: 1px solid #B3E0FF; cursor: pointer; font-size: 13px; font-weight: 600;">👁️ Voir</button>
-            <button style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 0;" onclick="deleteDoc('${d.url}', '${d.name.replace(/'/g, "\\'")}', '${d.id}')">🗑️</button>
+            <button data-id="${d.id}" onclick="openEditModifier(this)" title="Modifier">✏️</button>
+            <button onclick="openDocumentPreview('${d.url}', '${d.filename}')" title="Voir">👁️</button>
+            <button onclick="deleteDoc('${d.url}', '${d.name.replace(/'/g, "\\'")}', '${d.id}')" title="Supprimer">🗑️</button>
           </div>
         </div>`;
       });
