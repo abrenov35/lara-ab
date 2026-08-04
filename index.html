@@ -465,6 +465,18 @@ let docs = [];
 let filteredDocs = [];
 let selectedFile = null;
 
+// Détecter si iPhone/Safari
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+function isSafari() {
+  return /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+}
+
+const isIphoneSafari = isIOS() && isSafari();
+const MAX_FILE_SIZE = isIphoneSafari ? 5 * 1024 * 1024 : 15 * 1024 * 1024; // 5MB iPhone, 15MB autre
+
 function msg(text, success) {
   let msgEl = document.createElement("div");
   msgEl.className = "msg " + (success ? "ok" : "err");
@@ -655,18 +667,19 @@ async function saveEditMetadata(name, desc, category, btn) {
 
 async function saveEditWithNewFile(name, desc, category, file, btn) {
   // Vérifier taille fichier
-  const maxSize = 15 * 1024 * 1024; // 15MB
-  if (file.size > maxSize) {
-    msg("❌ Fichier trop volumineux (max 15MB)", false);
+  if (file.size > MAX_FILE_SIZE) {
+    const maxMB = MAX_FILE_SIZE / (1024 * 1024);
+    msg(`❌ Fichier trop volumineux (max ${Math.round(maxMB)}MB)`, false);
     resetEditBtn(btn);
     return;
   }
   
   let reader = new FileReader();
   reader.onload = async (e) => {
-    let data = e.target.result.split(",")[1];
-    
     try {
+      let data = e.target.result.split(",")[1];
+      const timeoutMs = isIphoneSafari ? 120000 : 60000;
+      
       let r = await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
@@ -678,8 +691,14 @@ async function saveEditWithNewFile(name, desc, category, file, btn) {
           category: category,
           filename: file.name,
           file: data
-        })
+        }),
+        signal: AbortSignal.timeout(timeoutMs)
       });
+      
+      if (!r.ok) {
+        throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+      }
+      
       let j = await r.json();
       if (j && j.success) {
         msg("✅ Document mis à jour!", true);
@@ -687,11 +706,11 @@ async function saveEditWithNewFile(name, desc, category, file, btn) {
         resetEditBtn(btn);
         setTimeout(load, 500);
       } else {
-        msg("❌ Erreur: " + (j?.message || "unknown"), false);
-        resetEditBtn(btn);
+        throw new Error(j?.message || "unknown");
       }
     } catch (e) {
-      msg("❌ Erreur: " + e.message, false);
+      console.error("Edit error:", e.message);
+      msg("❌ " + e.message, false);
       resetEditBtn(btn);
     }
   };
@@ -741,42 +760,56 @@ async function upload() {
     return;
   }
   
-  // Vérifier la taille du fichier (limite: 15MB avant conversion)
-  const maxSize = 15 * 1024 * 1024; // 15MB
-  if (selectedFile.size > maxSize) {
-    msg("❌ Fichier trop volumineux (max 15MB)", false);
+  // Vérifier la taille du fichier
+  if (selectedFile.size > MAX_FILE_SIZE) {
+    const maxMB = MAX_FILE_SIZE / (1024 * 1024);
+    msg(`❌ Fichier trop volumineux (max ${Math.round(maxMB)}MB)`, false);
+    console.log(`File size: ${selectedFile.size} bytes, max: ${MAX_FILE_SIZE} bytes, device: ${isIphoneSafari ? 'iPhone Safari' : 'Other'}`);
     resetUploadBtn(btn);
     return;
   }
   
   let reader = new FileReader();
   reader.onload = async (e) => {
-    let data = e.target.result.split(",")[1];
-    
-    // Vérifier la taille en base64
-    const base64Size = data.length * 0.75; // base64 = +33%
-    if (base64Size > 50 * 1024 * 1024) {
-      msg("❌ Fichier trop volumineux après encodage", false);
+    try {
+      let data = e.target.result.split(",")[1];
+      
+      // Vérifier la taille en base64
+      const base64Size = data.length * 0.75;
+      const maxBase64 = 20 * 1024 * 1024; // 20MB max en base64
+      
+      if (base64Size > maxBase64) {
+        msg("❌ Fichier trop volumineux après encodage", false);
+        console.log(`Base64 size: ${base64Size} bytes, max: ${maxBase64} bytes`);
+        resetUploadBtn(btn);
+        return;
+      }
+      
+      console.log(`Upload starting - File: ${selectedFile.name}, Size: ${selectedFile.size}, Base64: ${base64Size}, Device: ${isIphoneSafari ? 'iPhone Safari' : 'Other'}`);
+      
+      await uploadWithRetry(
+        docName, 
+        selectedFile.name, 
+        docDesc, 
+        category, 
+        data, 
+        btn,
+        3
+      );
+    } catch (err) {
+      msg("❌ Erreur lecture fichier", false);
+      console.error("FileReader error:", err);
       resetUploadBtn(btn);
-      return;
     }
-    
-    await uploadWithRetry(
-      docName, 
-      selectedFile.name, 
-      docDesc, 
-      category, 
-      data, 
-      btn,
-      3 // 3 tentatives
-    );
   };
   
   reader.onerror = () => {
     msg("❌ Erreur de lecture du fichier", false);
+    console.error("FileReader error");
     resetUploadBtn(btn);
   };
   
+  console.log(`Starting to read file: ${selectedFile.name} (${selectedFile.size} bytes)`);
   reader.readAsDataURL(selectedFile);
 }
 
@@ -800,18 +833,30 @@ async function uploadWithRetry(docName, filename, docDesc, category, data, btn, 
       file: data 
     };
 
+    const payloadSize = JSON.stringify(payload).length;
+    const payloadSizeMB = payloadSize / (1024 * 1024);
+    
+    console.log(`Sending payload - Size: ${payloadSizeMB.toFixed(2)}MB, Device: ${isIphoneSafari ? 'iPhone Safari' : 'Other'}, Retries left: ${retries}`);
+
+    // Timeout plus long pour iPhone
+    const timeoutMs = isIphoneSafari ? 120000 : 60000; // 120s iPhone, 60s autre
+
     let r = await fetch(API, {
       method: "POST",
-      headers: { "Content-Type": "text/plain" }, // ✅ IMPORTANT: text/plain comme le GAS l'attend
+      headers: { "Content-Type": "text/plain" },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(60000)
+      signal: AbortSignal.timeout(timeoutMs)
     });
+    
+    console.log(`Fetch response - Status: ${r.status}, OK: ${r.ok}`);
     
     if (!r.ok) {
       throw new Error(`HTTP ${r.status}: ${r.statusText}`);
     }
     
     let j = await r.json();
+    console.log(`API response:`, j);
+    
     if (j && j.success) {
       msg("✅ Document ajouté!", true);
       resetUploadBtn(btn);
@@ -824,11 +869,13 @@ async function uploadWithRetry(docName, filename, docDesc, category, data, btn, 
     console.error("Upload error:", e.message, e.stack);
     
     if (retries > 0) {
-      msg("⏳ Nouvelle tentative...", false);
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const waitTime = isIphoneSafari ? 2000 : 1500; // Plus d'attente sur iPhone
+      msg(`⏳ Nouvelle tentative (${retries})...`, false);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
       await uploadWithRetry(docName, filename, docDesc, category, data, btn, retries - 1);
     } else {
-      msg("❌ Erreur: " + e.message, false);
+      msg("❌ " + e.message, false);
+      console.error("Upload failed completely:", e);
       resetUploadBtn(btn);
     }
   }
