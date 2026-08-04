@@ -1,4 +1,4 @@
-<!-- LARA v058 - Avec intégration complète des catégories -->
+<!-- LARA v059 - Ordre actions : Voir, Modifier, Supprimer -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -143,25 +143,29 @@
     
     .doc-actions { 
       display: flex; 
-      gap: 4px;
-      margin-left: 12px;
-      padding-left: 10px;
+      align-items: center;
+      gap: 16px;
+      margin-left: 18px;
+      padding-left: 18px;
       flex-shrink: 0;
     }
     .doc-actions button { 
-      padding: 5px;
-      border-radius: 5px; 
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 6px; 
       border: none; 
-      font-size: 14px; 
+      font-size: 18px; 
       cursor: pointer;
       background: transparent;
-      transition: all 0.2s;
-      min-width: 28px;
-      text-align: center;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .doc-actions button:hover { 
       background: rgba(24, 95, 165, 0.1);
-      transform: scale(1.1);
+      transform: scale(1.15);
     }
 
     .empty { text-align: center; color: #999; padding: 30px 20px; font-size: 13px; }
@@ -746,8 +750,8 @@ function render() {
             <div class="doc-name">${d.name}${descText}</div>
           </div>
           <div class="doc-actions">
-            <button data-id="${d.id}" onclick="openEditModifier(this)" title="Modifier">✏️</button>
             <button onclick="openDocumentPreview('${d.url}', '${d.filename}')" title="Voir">👁️</button>
+            <button data-id="${d.id}" onclick="openEditModifier(this)" title="Modifier">✏️</button>
             <button onclick="deleteDoc('${d.url}', '${d.name.replace(/'/g, "\\'")}', '${d.id}')" title="Supprimer">🗑️</button>
           </div>
         </div>`;
