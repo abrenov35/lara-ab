@@ -1,4 +1,4 @@
-<!-- LARA v059 - Ordre actions : Voir, Modifier, Supprimer -->
+<!-- LARA v059 - Upload universel drag-drop + mobile friendly -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -253,6 +253,33 @@
     
     .error-msg { color: #b3352c; font-size: 11px; margin-top: 4px; }
     
+    /* Upload zone drag-drop */
+    .upload-zone {
+      border: 2px dashed #185fa5;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      background: #f0f6fb;
+      transition: all 0.2s;
+      cursor: pointer;
+      margin: 12px 0;
+    }
+    .upload-zone:hover,
+    .upload-zone.drag-over {
+      background: #e6f0fc;
+      border-color: #0d3a66;
+    }
+    .upload-zone p { 
+      font-size: 13px; 
+      color: #666; 
+      margin: 8px 0; 
+    }
+    .upload-zone .icon { 
+      font-size: 36px; 
+      margin-bottom: 8px; 
+    }
+    #hiddenFileInput { display: none; }
+    
     /* Responsive mobile */
     @media (max-width: 640px) {
       body { padding: 8px; }
@@ -265,6 +292,8 @@
       .filter-section select { width: 100%; }
       .doc-item { padding: 9px 12px; }
       .modal-box { width: 95%; max-width: 100%; }
+      .upload-zone { padding: 16px; }
+      .upload-zone .icon { font-size: 28px; }
     }
   </style>
 </head>
@@ -275,7 +304,6 @@
     <div><h1>📋 Gestion Documentaire AB RENOV 35</h1><p style="font-size: 12px; margin-top: 5px; opacity: 0.7;">Chantiers</p></div>
     <div style="display: flex; align-items: center; gap: 8px;">
       <button class="btn" onclick="openModal()">+ Ajouter</button>
-      <button class="btn" onclick="openInfo()" aria-label="Informations" title="Informations" style="width: 40px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 16px;">ⓘ</button>
     </div>
   </header>
 
@@ -312,49 +340,11 @@
   </div>
 </div>
 
-<!-- Modal Info -->
-<div class="modal" id="infoModal">
-  <div class="modal-box" style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
-    <h2>ℹ️ Gestion Documentaire AB RENOV 35</h2>
-    <h3 style="margin-top: 20px; color: #185fa5;">Catégories</h3>
-    <ul style="margin-left: 20px; font-size: 13px; line-height: 1.6;">
-      <li>💰 Devis et avenants</li>
-      <li>📐 Plans et études</li>
-      <li>📸 Photos chantier</li>
-      <li>🛒 Commandes et fournisseurs</li>
-      <li>📋 Fiches techniques</li>
-      <li>📅 Planning</li>
-      <li>📝 Comptes rendus</li>
-      <li>✅ Validations clients</li>
-      <li>💳 Facturation</li>
-      <li>👷 Sous-traitants</li>
-      <li>📄 Administratif et assurances</li>
-      <li>📦 Réception et réserves</li>
-      <li>🔧 SAV</li>
-      <li>📁 Autres</li>
-    </ul>
-    <h3 style="margin-top: 20px; color: #185fa5;">Fonctionnalités</h3>
-    <ul style="margin-left: 20px; font-size: 13px; line-height: 1.6;">
-      <li><strong>Ajouter:</strong> Enregistre dans Google Drive et Google Sheets</li>
-      <li><strong>Modifier:</strong> Changez le nom, description et catégorie</li>
-      <li><strong>Voir:</strong> Prévisualise le document directement</li>
-      <li><strong>Supprimer:</strong> Retire du Drive et du Sheets</li>
-      <li><strong>Filtre:</strong> Par catégorie ou recherche multi-critères</li>
-    </ul>
-    <h3 style="margin-top: 20px; color: #185fa5;">Stockage</h3>
-    <ul style="margin-left: 20px; font-size: 13px; line-height: 1.6;">
-      <li>📁 Google Drive - Documents réels</li>
-      <li>📊 Google Sheets - Métadonnées + Catégories</li>
-      <li>☁️ Synchronisation en temps réel</li>
-    </ul>
-    <button class="btn-cancel" onclick="closeInfo()" style="width: 100%; margin-top: 20px;">Fermer</button>
-  </div>
-</div>
-
-<!-- Modal Ajout -->
+<!-- Modal Ajout avec Upload Drag-Drop Universal -->
 <div class="modal" id="modal">
   <div class="modal-box">
     <h2>Ajouter un document</h2>
+    
     <label style="display: block; margin-bottom: 3px; font-weight: 600; font-size: 12px; color: #333;">Catégorie *</label>
     <select id="docCategory" required onchange="clearCategoryError()">
       <option value="">Choisir une catégorie</option>
@@ -381,8 +371,15 @@
     <label style="display: block; margin-bottom: 3px; margin-top: 10px; font-weight: 600; font-size: 12px; color: #333;">Description</label>
     <input type="text" id="docDesc" placeholder="Description (optionnel)">
     
-    <label style="display: block; margin-bottom: 3px; margin-top: 10px; font-weight: 600; font-size: 12px; color: #333;">Fichier *</label>
-    <input type="file" id="file" required>
+    <!-- Zone drag-drop universelle -->
+    <label style="display: block; margin-bottom: 8px; margin-top: 10px; font-weight: 600; font-size: 12px; color: #333;">Fichier *</label>
+    <div class="upload-zone" id="uploadZone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" onclick="document.getElementById('hiddenFileInput').click()">
+      <div class="icon">📁</div>
+      <p><strong>Déposer un fichier ici</strong></p>
+      <p style="font-size: 12px; color: #999;">ou cliquer pour parcourir</p>
+    </div>
+    <input type="file" id="hiddenFileInput" onchange="handleFileSelect(event)">
+    <div id="fileName" style="font-size: 12px; color: #185fa5; margin-top: 8px; text-align: center;"></div>
     
     <button class="btn-submit" onclick="upload()" style="margin-top: 14px;">Ajouter</button>
     <button class="btn-cancel" onclick="closeModal()">Annuler</button>
@@ -457,6 +454,7 @@
 const API = "https://script.google.com/macros/s/AKfycbyfxVPKymgq8LeqKkhLyRaMGhsT4SQbC-GJCntbUvw7-453Z8yqwRiTfjAGEWX0SEyX/exec";
 let docs = [];
 let filteredDocs = [];
+let selectedFile = null;
 
 function msg(text, success) {
   let msgEl = document.createElement("div");
@@ -471,17 +469,52 @@ function closeModal() {
   document.getElementById("docCategory").value = ""; 
   document.getElementById("docName").value = ""; 
   document.getElementById("docDesc").value = ""; 
-  document.getElementById("file").value = ""; 
+  document.getElementById("hiddenFileInput").value = ""; 
   document.getElementById("categoryError").textContent = "";
+  document.getElementById("fileName").textContent = "";
+  selectedFile = null;
 }
 
 function openModal() { document.getElementById("modal").classList.add("active"); }
-function openInfo() { document.getElementById("infoModal").classList.add("active"); }
-function closeInfo() { document.getElementById("infoModal").classList.remove("active"); }
 function closeDeleteModal() { document.getElementById("deleteModal").classList.remove("active"); }
-
 function clearCategoryError() { document.getElementById("categoryError").textContent = ""; }
 function clearEditCategoryError() { document.getElementById("editCategoryError").textContent = ""; }
+
+/* Drag-Drop Functions */
+function handleDragOver(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  document.getElementById("uploadZone").classList.add("drag-over");
+}
+
+function handleDragLeave(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  document.getElementById("uploadZone").classList.remove("drag-over");
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  document.getElementById("uploadZone").classList.remove("drag-over");
+  
+  let files = e.dataTransfer.files;
+  if (files.length > 0) {
+    selectedFile = files[0];
+    displayFileName(files[0].name);
+  }
+}
+
+function handleFileSelect(e) {
+  if (e.target.files.length > 0) {
+    selectedFile = e.target.files[0];
+    displayFileName(e.target.files[0].name);
+  }
+}
+
+function displayFileName(filename) {
+  document.getElementById("fileName").textContent = "✅ " + filename;
+}
 
 let editContext = {};
 
@@ -578,9 +611,8 @@ async function upload() {
   let category = document.getElementById("docCategory").value;
   let docName = document.getElementById("docName").value;
   let docDesc = document.getElementById("docDesc").value;
-  let file = document.getElementById("file").files[0];
   
-  if (!docName || !file) { 
+  if (!docName || !selectedFile) { 
     msg("Remplis tous les champs requis", false); 
     btn.disabled = false; 
     btn.style.opacity = "1"; 
@@ -603,7 +635,7 @@ async function upload() {
       let r = await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ cat: "document", name: docName, filename: file.name, date: new Date().toISOString().split("T")[0], desc: docDesc || "", category: category, file: data })
+        body: JSON.stringify({ cat: "document", name: docName, filename: selectedFile.name, date: new Date().toISOString().split("T")[0], desc: docDesc || "", category: category, file: data })
       });
       let j = await r.json();
       if (j && j.success) {
@@ -626,7 +658,7 @@ async function upload() {
       btn.style.cursor = "pointer";
     }
   };
-  reader.readAsDataURL(file);
+  reader.readAsDataURL(selectedFile);
 }
 
 async function deleteDoc(url, name, id) {
