@@ -373,13 +373,9 @@
     
     <!-- Zone drag-drop universelle -->
     <label style="display: block; margin-bottom: 8px; margin-top: 10px; font-weight: 600; font-size: 12px; color: #333;">Fichier *</label>
-    <div class="upload-zone" id="uploadZone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" onclick="document.getElementById('hiddenFileInput').click()">
-      <div class="icon">📁</div>
-      <p><strong>Déposer un fichier ici</strong></p>
-      <p style="font-size: 12px; color: #999;">ou cliquer pour parcourir</p>
-    </div>
-    <input type="file" id="hiddenFileInput" onchange="handleFileSelect(event)">
-    <div id="fileName" style="font-size: 12px; color: #185fa5; margin-top: 8px; text-align: center;"></div>
+    <button class="btn" onclick="document.getElementById('hiddenFileInput').click()" style="width: 100%; background: #185fa5; color: white; margin-bottom: 8px;">📎 Choisir un fichier</button>
+    <input type="file" id="hiddenFileInput" onchange="handleFileSelect(event)" style="display:none">
+    <div id="fileName" style="font-size: 12px; color: #185fa5; text-align: center;"></div>
     
     <button class="btn-submit" onclick="upload()" style="margin-top: 14px;">Ajouter</button>
     <button class="btn-cancel" onclick="closeModal()">Annuler</button>
@@ -417,13 +413,9 @@
     <input type="text" id="editDesc" placeholder="Description">
     
     <label style="display: block; margin-bottom: 8px; margin-top: 12px; font-weight: 600; font-size: 12px; color: #333;">Modifier le fichier (optionnel)</label>
-    <div class="upload-zone" id="editUploadZone" ondrop="handleEditDrop(event)" ondragover="handleEditDragOver(event)" ondragleave="handleEditDragLeave(event)" onclick="document.getElementById('editHiddenFileInput').click()">
-      <div class="icon">📁</div>
-      <p><strong>Déposer un nouveau fichier</strong></p>
-      <p style="font-size: 12px; color: #999;">ou cliquer pour parcourir</p>
-    </div>
-    <input type="file" id="editHiddenFileInput" onchange="handleEditFileSelect(event)">
-    <div id="editFileName" style="font-size: 12px; color: #185fa5; margin-top: 8px; text-align: center;"></div>
+    <button class="btn" onclick="document.getElementById('editHiddenFileInput').click()" style="width: 100%; background: #185fa5; color: white; margin-bottom: 8px;">📎 Choisir un nouveau fichier</button>
+    <input type="file" id="editHiddenFileInput" onchange="handleEditFileSelect(event)" style="display:none">
+    <div id="editFileName" style="font-size: 12px; color: #185fa5; text-align: center;"></div>
     
     <button class="btn-submit" onclick="saveEdit()" style="margin-top: 14px;">Enregistrer</button>
     <button class="btn-cancel" onclick="closeEditModal()">Annuler</button>
@@ -464,6 +456,7 @@ const API = "https://script.google.com/macros/s/AKfycbyfxVPKymgq8LeqKkhLyRaMGhsT
 let docs = [];
 let filteredDocs = [];
 let selectedFile = null;
+let editSelectedFile = null;
 
 // Détecter si iPhone/Safari
 function isIOS() {
@@ -501,35 +494,10 @@ function closeDeleteModal() { document.getElementById("deleteModal").classList.r
 function clearCategoryError() { document.getElementById("categoryError").textContent = ""; }
 function clearEditCategoryError() { document.getElementById("editCategoryError").textContent = ""; }
 
-/* Drag-Drop Functions pour modale ajout */
-function handleDragOver(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  document.getElementById("uploadZone").classList.add("drag-over");
-}
-
-function handleDragLeave(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  document.getElementById("uploadZone").classList.remove("drag-over");
-}
-
-function handleDrop(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  document.getElementById("uploadZone").classList.remove("drag-over");
-  
-  let files = e.dataTransfer.files;
-  if (files.length > 0) {
-    selectedFile = files[0];
-    displayFileName(files[0].name);
-  }
-}
-
 function handleFileSelect(e) {
   if (e.target.files.length > 0) {
     selectedFile = e.target.files[0];
-    displayFileName(e.target.files[0].name);
+    displayFileName(selectedFile.name);
   }
 }
 
@@ -537,37 +505,10 @@ function displayFileName(filename) {
   document.getElementById("fileName").textContent = "✅ " + filename;
 }
 
-/* Drag-Drop Functions pour modale modification */
-let editSelectedFile = null;
-
-function handleEditDragOver(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  document.getElementById("editUploadZone").classList.add("drag-over");
-}
-
-function handleEditDragLeave(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  document.getElementById("editUploadZone").classList.remove("drag-over");
-}
-
-function handleEditDrop(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  document.getElementById("editUploadZone").classList.remove("drag-over");
-  
-  let files = e.dataTransfer.files;
-  if (files.length > 0) {
-    editSelectedFile = files[0];
-    displayEditFileName(files[0].name);
-  }
-}
-
 function handleEditFileSelect(e) {
   if (e.target.files.length > 0) {
     editSelectedFile = e.target.files[0];
-    displayEditFileName(e.target.files[0].name);
+    displayEditFileName(editSelectedFile.name);
   }
 }
 
