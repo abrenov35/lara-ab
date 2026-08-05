@@ -670,6 +670,26 @@ async function load() {
     if (j && j.ok && j.data) {
       docs = j.data;
       filteredDocs = [...docs];
+      
+      // Debug: afficher la structure des données
+      if (docs.length > 0) {
+        console.log("=== PREMIÈRE LIGNE DE DONNÉES ===");
+        console.log("ID:", docs[0].id);
+        console.log("Nom:", docs[0].name);
+        console.log("Description:", docs[0].desc);
+        console.log("Filename:", docs[0].filename);
+        console.log("URL:", docs[0].url);
+        console.log("Catégorie:", docs[0].category);
+        console.log("Date:", docs[0].date);
+        console.log("===================================");
+        
+        // Vérification: si le nom contient "drive.google.com", c'est une URL au lieu d'un nom
+        if (docs[0].name?.includes("drive.google.com")) {
+          console.warn("⚠️ ATTENTION: Le champ 'Nom' contient une URL!");
+          console.warn("Vérifie ta structure Google Sheets (colonne B)");
+        }
+      }
+      
       render();
       console.log(`Loaded ${docs.length} documents`);
     } else {
