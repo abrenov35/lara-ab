@@ -945,6 +945,13 @@ function render() {
 }
 
 function openDocumentPreview(url, filename) {
+  // Sur iPhone Safari, ouvrir directement au lieu de preview
+  if (isIphoneSafari) {
+    window.open(url, '_blank');
+    return;
+  }
+  
+  // Sur desktop/autres: afficher preview en iframe
   document.getElementById("previewIframe").src = url.replace("/view", "/preview");
   document.getElementById("previewFilename").textContent = filename || "Document";
   document.getElementById("previewOpenBtn").href = url;
