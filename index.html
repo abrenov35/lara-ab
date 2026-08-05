@@ -655,15 +655,29 @@ async function saveEditWithNewFile(name, desc, category, file, btn) {
 
 async function load() {
   try {
+    console.log(`Loading documents from API: ${API}`);
     let r = await fetch(API);
+    
+    console.log(`Fetch response - Status: ${r.status}, OK: ${r.ok}`);
+    
+    if (!r.ok) {
+      throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+    }
+    
     let j = await r.json();
+    console.log(`API response:`, j);
+    
     if (j && j.ok && j.data) {
       docs = j.data;
       filteredDocs = [...docs];
       render();
+      console.log(`Loaded ${docs.length} documents`);
+    } else {
+      throw new Error(j?.message || "Réponse serveur invalide");
     }
   } catch (e) { 
-    console.error("Load error:", e.message);
+    console.error("Load error:", e.message, e.stack);
+    document.getElementById("docsList").innerHTML = `<div class="empty" style="color: #b3352c;">❌ Erreur chargement: ${e.message}</div>`;
   }
 }
 
